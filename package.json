@@ -1,0 +1,36 @@
+{
+	"name": "cinovo-logger",
+	"version": "0.0.1",
+	"description": "Logger",
+	"keywords": [
+		"logger"
+	],
+	"author": {
+		"name": "Michael Wittig",
+		"email": "michael.wittig@cinovo.de"
+	},
+	"contributors": [
+		{
+			"name": "Andreas Wittig",
+			"email": "andreas.wittig@cinovo.de"
+		}
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cinovo/node-logger.git
+	},
+	"dependencies": {
+	},
+	"devDependencies": {
+	},
+	"main": "index",
+	"engines": {
+		"node": ">= 0.6.0"
+	},
+	"scripts": {
+	},
+	"readmeFilename": "README.md",
+	"bugs": {
+		"url": "https://github.com/cinovo/node-logger/issues"
+	}
+}
