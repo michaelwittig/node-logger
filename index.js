@@ -169,6 +169,9 @@ exports.removeListener = function(level, listener) {
 exports.removeAllListeners = function(level) {
 	emitter.removeAllListeners(level);
 };
+exports.append = function(endpoint) {
+	endpoints.push(endpoint);
+};
 exports.Endpoint = Endpoint;
 fullOrigin = function() {
 	fullOrigin = true;
