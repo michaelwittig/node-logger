@@ -61,11 +61,10 @@ Now you can log to multiple endpoints.
 
 ## API
 
-### debug, info, error, critical
+### debug, info, error, critical([origin], message, [metadata], [callback])
 
 Depending on the level you want to log choose one of the four methods.
 
-Each method takes 4 arguments:
 * `origin`: String to indicate where the log come from, e. g. the name of the script (optional)
 * `message`: String to tell what happened
 * `metadata`: String, Number, Boolean, Array or Object to tell you more about the situation (optional)
@@ -80,11 +79,10 @@ logger.error("myscript", "some values are not ok", {a: 10, b: 20});
 logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
 `````
 
-### exception
+### exception([origin], message, error, [callback])
 
 If you want to log an Error there is a special method `exception` which logs as an `error`
 
-It takes 4 arguments:
 * `origin`: String to indicate where the log come from, e. g. the name of the script (optional)
 * `message`: String to tell what happened
 * `error`: Error
@@ -97,3 +95,72 @@ logger.exception("some values are not ok", new Error("error"));
 logger.exception("myscript", "some values are not ok", new Error("error"));
 logger.exception("myscript", "some values are not ok", new Error("error"), function(err) { ... });
 `````
+
+### Log
+
+The log object contains the following fields:
+
+`````
+{
+	level: String["debug", "warning", "error", "critical"]
+	date: Date
+	pid: Number
+	origin: String to indicate where the log come from, e. g. the name of the script (optional)
+	message: String to tell what happened
+	metadata: String, Number, Boolean, Array or Object to tell you more about the situation (optional)
+	fullOrigin: {
+		file: String of the file name,
+		line: Number of the line,
+		fn: String of the invoked function name
+	} (optional)
+}
+`````
+
+### EventEmitter
+
+The cinovo-logger is also an [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter).
+
+#### on, addListener(level, listener)
+
+Adds a listener to the end of the listeners array for the specified evel.
+
+* `level`: String["debug", "warning", "error", "critical"]
+* `listener`: function(level, log)
+    * `level`: String["debug", "warning", "error", "critical"]
+    * `log`: Log
+
+#### once(level, listener)
+
+Adds a **one time** listener for the level. This listener is invoked only the next time the level is fired, after which it is removed.
+
+* `level`: String["debug", "warning", "error", "critical"]
+* `listener`: function(level, log)
+    * `level`: String["debug", "warning", "error", "critical"]
+    * `log`: Log
+
+#### removeListener(level, listener)
+
+Remove a listener from the listener array for the specified event.
+
+* `level`: String["debug", "warning", "error", "critical"]
+* `listener`: function(level, log)
+    * `level`: String["debug", "warning", "error", "critical"]
+    * `log`: Log
+
+#### removeAllListeners([level])
+
+Removes all listeners, or those of the specified event.
+
+* `level`: String["debug", "warning", "error", "critical"] (optional)
+
+### append(appender)
+
+* `appender`: must extend logger.Endpoint see **Custom Endpoint**
+
+### fullOrigin()
+
+TODO
+
+## Custom Endpoint
+
+TODO
