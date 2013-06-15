@@ -1,52 +1,79 @@
+# cinovo-logger
 
-# Getting started
+cinovo-logger is an async logger for Node.js with multiple endpoints.
 
-## At first you must require the logger.
+## Getting started
+
+### At first you must install and require the logger.
+
+    npm install cinovo-logger
+
+### Next you must require the module
 
     var logger = require("cinovo-logger");
 
-## Append an Endpoint
+### Append an endpoint
 
-There are many Endpoints:
+There are some endpoints available:
 
-* cinovo-logger-console
-* cinovo-logger-syslog
-* cinovo-logger-aws
+* [cinovo-logger-console](https://github.com/cinovo/node-logger-console)
+* [cinovo-logger-syslog](https://github.com/cinovo/node-logger-syslog)
+* [cinovo-logger-aws](https://github.com/cinovo/node-logger-aws)
 
-You could also write your own Endpoint.
+You could also write your own endpoint.
 
-## How to use the logger
+If you wish to log to console just:
 
-### debug
+	npm install cinovo-logger-console
 
-    logger.debug("myscript", "all values are ok");
+In your JavaScript code append the endpoint.
 
-or if you want to provide some metadata:
+    logger.append(require("cinovo-logger-console")(true, true, true, true));
 
-    logger.debug("myscript", "all values are ok", {a: 1, b: 2});
+### Log something
 
-### info
+    logger.debug("all values are ok");
+    logger.info("myscript", "all values are ok");
+    logger.error("myscript", "some values are not ok", {a: 10, b: 20});
+    logger.exception("myscript", "some values are not ok", new Error("error"));
+    logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
 
-    logger.info("myscript", "all values are ok", {a: 1, b: 2});
+### Done
 
-or if you want to provide some metadata:
+Now you can log to multiple endpoints.
 
-    logger.info("myscript", "all values are ok", {a: 1, b: 2});
+## API
 
-### error
+### debug, info, error, critical
 
-    logger.error("myscript", "some values are not ok");
-    logger.exception("myscript", "some values are not ok", new Error("values are not ok"));
+Depending on the level you want to log choose one of the four methods.
 
-or if you want to provide some metadata:
+Each method takes 4 arguments
+`origin`: String to indicate where the log come from, e. g. the name of the script (optional)
+`message`: String to tell what happened
+`metadata`: String, Number, Boolean, Array or Object to tell you more about the situation (optional)
+`callback`: Function(err) Fired after log was processed by all endpoints (optional)
 
-    logger.error("myscript", "some values are not ok", {a: 1, b: 2});
-    logger.exception("myscript", "some values are not ok", new Error("values are not ok"));
+Examples:
 
-### critical
+    logger.debug("all values are ok");
+    logger.info("myscript", "all values are ok");
+    logger.error("myscript", "some values are not ok", {a: 10, b: 20});
+    logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
 
-    logger.critical("myscript", "all values are not ok");
+### exception
 
-or if you want to provide some metadata:
+If you want to log an Error there is a special method `exception` which logs as an `error`
 
-    logger.critical("myscript", "all values are not ok", {a: 1, b: 2});
+It takes 4 arguments
+`origin`: String to indicate where the log come from, e. g. the name of the script (optional)
+`message`: String to tell what happened
+`error`: Error
+`callback`: Function(err) Fired after log was processed by all endpoints (optional)
+
+Examples:
+
+    logger.exception("some values are not ok", new Error("error"));
+    logger.exception("myscript", "some values are not ok", new Error("error"));
+    logger.exception("myscript", "some values are not ok", new Error("error"), function(err) { ... });
+
