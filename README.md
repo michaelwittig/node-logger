@@ -10,7 +10,9 @@ cinovo-logger is an async logger for Node.js with multiple endpoints.
 
 ### Next you must require the module
 
-    var logger = require("cinovo-logger");
+`````javascript
+var logger = require("cinovo-logger");
+`````
 
 ### Append an endpoint
 
@@ -28,15 +30,19 @@ If you wish to log to console just:
 
 In your JavaScript code append the endpoint.
 
-    logger.append(require("cinovo-logger-console")(true, true, true, true));
+`````javascript
+logger.append(require("cinovo-logger-console")(true, true, true, true));
+`````
 
 ### Log something
 
-    logger.debug("all values are ok");
-    logger.info("myscript", "all values are ok");
-    logger.error("myscript", "some values are not ok", {a: 10, b: 20});
-    logger.exception("myscript", "some values are not ok", new Error("error"));
-    logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
+`````javascript
+logger.debug("all values are ok");
+logger.info("myscript", "all values are ok");
+logger.error("myscript", "some values are not ok", {a: 10, b: 20});
+logger.exception("myscript", "some values are not ok", new Error("error"));
+logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
+`````
 
 ### Done
 
@@ -56,10 +62,12 @@ Each method takes 4 arguments
 
 Examples:
 
-    logger.debug("all values are ok");
-    logger.info("myscript", "all values are ok");
-    logger.error("myscript", "some values are not ok", {a: 10, b: 20});
-    logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
+`````javascript
+logger.debug("all values are ok");
+logger.info("myscript", "all values are ok");
+logger.error("myscript", "some values are not ok", {a: 10, b: 20});
+logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(err) { ... });
+`````
 
 ### exception
 
@@ -73,7 +81,8 @@ It takes 4 arguments
 
 Examples:
 
-    logger.exception("some values are not ok", new Error("error"));
-    logger.exception("myscript", "some values are not ok", new Error("error"));
-    logger.exception("myscript", "some values are not ok", new Error("error"), function(err) { ... });
-
+`````javascript
+logger.exception("some values are not ok", new Error("error"));
+logger.exception("myscript", "some values are not ok", new Error("error"));
+logger.exception("myscript", "some values are not ok", new Error("error"), function(err) { ... });
+`````
