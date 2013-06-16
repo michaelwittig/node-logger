@@ -1,9 +1,10 @@
 {
 	"name": "cinovo-logger",
-	"version": "0.0.3",
-	"description": "Logger with multiple Endpoints",
+	"version": "0.0.4",
+	"description": "Async logger for Node.js with multiple endpoints.",
 	"keywords": [
-		"logger"
+		"logger",
+		"async"
 	],
 	"author": {
 		"name": "Michael Wittig",

@@ -32,6 +32,7 @@ There are some endpoints available:
 
 * [cinovo-logger-console](https://github.com/cinovo/node-logger-console)
 * [cinovo-logger-syslog](https://github.com/cinovo/node-logger-syslog)
+* [cinovo-logger-aws](https://github.com/cinovo/node-logger-aws)
 
 You could also write your own endpoint.
 
@@ -164,3 +165,7 @@ TODO
 ## Custom Endpoint
 
 TODO
+
+## Ideas
+
+* log hostname
