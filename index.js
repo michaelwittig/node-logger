@@ -1,18 +1,26 @@
-var events = require("events");
+var events = require("events"),
+	util = require("util"),
+	assert = require("assert-plus");
 
 var emitter = new events.EventEmitter();
 var endpoints = [];
 var fullOrigin = false;
 
-function Endpoint(debug, info, error, critial) {
+function Endpoint(debug, info, error, critical) {
+	assert.bool(debug, "debug");
+	assert.bool(info, "info");
+	assert.bool(error, "error");
+	assert.bool(critical, "critical");
+	events.EventEmitter.call(this);
 	this.levels = {
 		debug: debug,
 		info: info,
 		error: error,
-		critical: critial
+		critical: critical
 	};
 	this.logErrCount = 0;
 }
+util.inherits(Endpoint, events.EventEmitter);
 
 function getFullOrigin() {
 	var depth = 5;
@@ -106,83 +114,43 @@ function log(level, args) {
 	});
 }
 
-/**
- * @param [origin] Origin
- * @param message Message
- * @param [metadata] Metadata
- * @param [callback] Callback
- */
 exports.debug = function(origin, message, metadata, callback) {
 	log("debug", arguments);
 };
-/**
- * @param [origin] Origin
- * @param message Message
- * @param [metadata] Metadata
- * @param [callback] Callback
- */
 exports.info = function(origin, message, metadata, callback) {
 	log("info", arguments);
 };
-/**
- * @param [origin] Origin
- * @param message Message
- * @param [metadata] Metadata
- * @param [callback] Callback
- */
 exports.error = function(origin, message, metadata, callback) {
 	log("error", arguments);
 };
-/**
- * @param [origin] Origin
- * @param message Message
- * @param [metadata] Metadata
- * @param [callback] Callback
- */
 exports.critical = function(origin, message, metadata, callback) {
 	log("critical", arguments);
 };
-/**
- * @param [origin] Origin
- * @param message Message
- * @param err Error
- * @param [callback] Callback
- */
 exports.exception = function(origin, message, err, callback) {
 	log("error", arguments);
 };
-/**
- * @param level [info,err,crit]
- * @param listener function(level, origin)
- */
 exports.on = function(level, listener) {
+	assert.string(level, "level");
+	assert.func(listener, "listener");
 	emitter.on(level, listener);
 };
-/**
- * @param level [info,err,crit]
- * @param listener function(level, origin)
- */
 exports.addListener = function(level, listener) {
+	assert.string(level, "level");
+	assert.func(listener, "listener");
 	emitter.addListener(level, listener);
 };
-/**
- * @param level [info,err,crit]
- * @param listener function(level, origin)
- */
 exports.once = function(level, listener) {
+	assert.string(level, "level");
+	assert.func(listener, "listener");
 	emitter.once(level, listener);
 };
-/**
- * @param level [info,err,crit]
- * @param listener function(level, origin)
- */
 exports.removeListener = function(level, listener) {
+	assert.string(level, "level");
+	assert.func(listener, "listener");
 	emitter.removeListener(level, listener);
 };
-/**
- * @param [level]
- */
 exports.removeAllListeners = function(level) {
+	assert.optionalString(level, "level");
 	emitter.removeAllListeners(level);
 };
 exports.append = function(endpoint) {
