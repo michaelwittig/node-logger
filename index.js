@@ -1,6 +1,7 @@
 var events = require("events"),
 	util = require("util"),
-	assert = require("assert-plus");
+	assert = require("assert-plus"),
+	os = require("os");
 
 var emitter = new events.EventEmitter();
 var endpoints = [];
@@ -50,7 +51,8 @@ function getData(level, args) {
 	var data = {
 		level: level,
 		date: new Date(),
-		pid: process.pid
+		pid: process.pid,
+		hostname: os.hostname()
 	};
 	if (args.length >= 3) {
 		if (typeof args[0] === "string" && typeof args[1] === "string") {
@@ -94,7 +96,6 @@ function log(level, args) {
 	if (typeof args[args.length - 1] === "function") {
 		callback =  args[args.length - 1];
 	}
-	emitter.emit("level:" + data.level, data);
 	var endpointCallbacks = 0, endpointError = undefined;
 	endpoints.forEach(function(endpoint) {
 		if (endpoint.levels[data.level] === true) {
@@ -105,8 +106,12 @@ function log(level, args) {
 				}
 				endpointCallbacks += 1;
 				if (endpointCallbacks ===  endpoints.length) {
-					if (callback) {
-						callback(endpointError);
+					try {
+						if (callback) {
+							callback(endpointError);
+						}
+					} finally {
+						emitter.emit("level:" + data.level, data);
 					}
 				}
 			});
@@ -158,7 +163,45 @@ exports.removeAllListeners = function(level) {
 	}
 };
 exports.append = function(endpoint) {
+	assert.ok(endpoint instanceof Endpoint, "endpoint");
+	assert.func(endpoint.log, "endpoint.log");
+	assert.func(endpoint.stop, "endpoint.stop");
+	endpoint.on("error", function() {
+		endpoint.logErrCount += 1;
+	});
 	endpoints.push(endpoint);
+};
+exports.remove = function(endpoint, errCallback) {
+	assert.ok(endpoint instanceof Endpoint, "endpoint");
+	assert.func(endpoint.log, "endpoint.log");
+	assert.func(endpoint.stop, "endpoint.stop");
+	assert.func(errCallback, "errCallback");
+	var idx = endpoints.indexOf(endpoint);
+	endpoints.splice(idx, 1);
+	endpoint.stop(function(err) {
+		if (err)  {
+			errCallback(err);
+		} else {
+			errCallback();
+		}
+	});
+};
+exports.stop = function(errCallback) {
+	assert.func(errCallback, "errCallback");
+	var endpointCallbacks = 0, endpointError = undefined, n = endpoints.length;
+	endpoints.forEach(function(endpoint) {
+		endpoint.stop(function(err) {
+			if (err) {
+				endpointError = err;
+			}
+			endpointCallbacks += 1;
+			if (endpointCallbacks === n) {
+				errCallback(endpointError);
+			}
+		});
+	});
+	endpoints = [];
+	emitter.removeAllListeners();
 };
 exports.Endpoint = Endpoint;
 exports.fullOrigin = function() {

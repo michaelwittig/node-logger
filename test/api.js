@@ -9,6 +9,9 @@ util.inherits(DummyEndpoint, logger.Endpoint);
 DummyEndpoint.prototype.log = function(log, errCallback) {
 	errCallback();
 };
+DummyEndpoint.prototype.stop = function(errCallback) {
+	errCallback();
+};
 
 logger.append(new DummyEndpoint());
 logger.fullOrigin();
@@ -237,14 +240,46 @@ describe("API", function(){
 			})
 		});
 	});
+	describe("append", function() {
+		it("should work if all params are set7", function() {
+			var e = new DummyEndpoint();
+			logger.append(e);
+		});
+	});
+	describe("remove", function() {
+		it("should work if all params are set", function(done) {
+			var e = new DummyEndpoint();
+			logger.append(e);
+			logger.remove(e, function(err) {
+				if (err) {
+					throw err;
+				} else {
+					done();
+				}
+			});
+		});
+	});
 	describe("fullOrigin", function() {
-		it("should be test/api.js in line 87", function(done) {
+		it("should be test/api.js in line 269", function(done) {
 			logger.once("debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 247, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 269, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
+		});
+	});
+	describe("stop", function() {
+		it("should work if all params are set", function(done) {
+			var e = new DummyEndpoint();
+			logger.append(e);
+			logger.stop(function(err) {
+				if (err) {
+					throw err;
+				} else {
+					done();
+				}
+			});
 		});
 	});
 });

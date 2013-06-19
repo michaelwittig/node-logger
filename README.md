@@ -108,6 +108,7 @@ The log object contains the following fields:
 	level: String["debug", "warning", "error", "critical"]
 	date: Date
 	pid: Number
+	hostname: String
 	origin: String to indicate where the log come from, e. g. the name of the script (optional)
 	message: String to tell what happened
 	metadata: String, Number, Boolean, Array or Object to tell you more about the situation (optional)
@@ -160,14 +161,31 @@ Removes all listeners, or those of the specified event.
 
 * `appender`: must extend logger.Endpoint see **Custom Endpoint**
 
+### remove(appender, errCallback)
+
+* `appender`: must extend logger.Endpoint see **Custom Endpoint**
+* `errCallback`: Function(err)
+    * `err`: Error
+
+### stop(errCallback)
+
+Stop all endpoints to avoid data loss.
+
+* `errCallback`: Function(err)
+    * `err`: Error
+
 ### fullOrigin()
 
-TODO
+Activates `fullOrigin` output in `log`. Locates the caller of an log function `debug`, `info`, `error`, `exception`, `critical` by:
+
+`````
+{
+	file: String of the file name,
+	line: Number of the line,
+	fn: String of the invoked function name
+}
+`````
 
 ## Custom Endpoint
 
 TODO
-
-## Ideas
-
-* log hostname
