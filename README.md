@@ -70,6 +70,7 @@ Depending on the level you want to log choose one of the four methods.
 * `message`: String to tell what happened
 * `metadata`: String, Number, Boolean, Array or Object to tell you more about the situation (optional)
 * `callback`: Function(err) Fired after log was processed by all endpoints (optional)
+    * `err`: Error (optional)
 
 **Examples:**
 
@@ -88,6 +89,7 @@ If you want to log an Error there is a special method `exception` which logs as 
 * `message`: String to tell what happened
 * `error`: Error
 * `callback`: Function(err) Fired after log was processed by all endpoints (optional)
+    * `err`: Error (optional)
 
 **Examples:**
 
@@ -126,7 +128,7 @@ The cinovo-logger is also an [EventEmitter](http://nodejs.org/api/events.html#ev
 Adds a listener to the end of the listeners array for the specified evel.
 
 * `level`: String["debug", "warning", "error", "critical"]
-* `listener`: function(level, log)
+* `listener`: Function(level, log)
     * `level`: String["debug", "warning", "error", "critical"]
     * `log`: Log
 
@@ -135,7 +137,7 @@ Adds a listener to the end of the listeners array for the specified evel.
 Adds a **one time** listener for the level. This listener is invoked only the next time the level is fired, after which it is removed.
 
 * `level`: String["debug", "warning", "error", "critical"]
-* `listener`: function(level, log)
+* `listener`: Function(level, log)
     * `level`: String["debug", "warning", "error", "critical"]
     * `log`: Log
 
@@ -144,7 +146,7 @@ Adds a **one time** listener for the level. This listener is invoked only the ne
 Remove a listener from the listener array for the specified event.
 
 * `level`: String["debug", "warning", "error", "critical"]
-* `listener`: function(level, log)
+* `listener`: Function(level, log)
     * `level`: String["debug", "warning", "error", "critical"]
     * `log`: Log
 
