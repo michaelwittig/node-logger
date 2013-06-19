@@ -31,6 +31,7 @@ var logger = require("cinovo-logger");
 There are some endpoints available:
 
 * [cinovo-logger-console](https://github.com/cinovo/node-logger-console)
+* [cinovo-logger-file](https://github.com/cinovo/node-logger-file)
 * [cinovo-logger-syslog](https://github.com/cinovo/node-logger-syslog)
 * [cinovo-logger-aws](https://github.com/cinovo/node-logger-aws)
 
