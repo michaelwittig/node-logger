@@ -94,7 +94,7 @@ function log(level, args) {
 	if (typeof args[args.length - 1] === "function") {
 		callback =  args[args.length - 1];
 	}
-	emitter.emit(data.level, data);
+	emitter.emit("level:" + data.level, data);
 	var endpointCallbacks = 0, endpointError = undefined;
 	endpoints.forEach(function(endpoint) {
 		if (endpoint.levels[data.level] === true) {
@@ -132,26 +132,30 @@ exports.exception = function(origin, message, err, callback) {
 exports.on = function(level, listener) {
 	assert.string(level, "level");
 	assert.func(listener, "listener");
-	emitter.on(level, listener);
+	emitter.on("level:" + level, listener);
 };
 exports.addListener = function(level, listener) {
 	assert.string(level, "level");
 	assert.func(listener, "listener");
-	emitter.addListener(level, listener);
+	emitter.addListener("level:" + level, listener);
 };
 exports.once = function(level, listener) {
 	assert.string(level, "level");
 	assert.func(listener, "listener");
-	emitter.once(level, listener);
+	emitter.once("level:" + level, listener);
 };
 exports.removeListener = function(level, listener) {
 	assert.string(level, "level");
 	assert.func(listener, "listener");
-	emitter.removeListener(level, listener);
+	emitter.removeListener("level:" + level, listener);
 };
 exports.removeAllListeners = function(level) {
 	assert.optionalString(level, "level");
-	emitter.removeAllListeners(level);
+	if (level) {
+		emitter.removeAllListeners("level:" + level);
+	} else {
+		emitter.removeAllListeners();
+	}
 };
 exports.append = function(endpoint) {
 	endpoints.push(endpoint);

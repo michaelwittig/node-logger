@@ -37,7 +37,7 @@ describe("API", function(){
 			endpoint.emit("test");
 		});
 	});
-	describe("debug, info, error, exception, critical", function() {
+	describe("debug", function() {
 		it("should work if message is set", function(done) {
 			logger.once("debug", function(log) {
 				assert.equal(log.message, "message");
@@ -77,11 +77,171 @@ describe("API", function(){
 			})
 		});
 	});
+	describe("info", function() {
+		it("should work if message is set", function(done) {
+			logger.once("info", function(log) {
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.info("message");
+		});
+		it("should work if origin and message are set", function(done) {
+			logger.once("info", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.info("origin", "message");
+		});
+		it("should work if message and metadata are set", function(done) {
+			logger.once("info", function(log) {
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.info("message", {a: 1});
+		});
+		it("should work if origin, message and metadata are set", function(done) {
+			logger.once("info", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.info("origin", "message", {a: 1});
+		});
+		it("should work if all params are set", function(done) {
+			logger.info("origin", "message", {a: 1}, function(err) {
+				if (err) throw err;
+				done();
+			})
+		});
+	});
+	describe("error", function() {
+		it("should work if message is set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.error("message");
+		});
+		it("should work if origin and message are set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.error("origin", "message");
+		});
+		it("should work if message and metadata are set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.error("message", {a: 1});
+		});
+		it("should work if origin, message and metadata are set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.error("origin", "message", {a: 1});
+		});
+		it("should work if all params are set", function(done) {
+			logger.error("origin", "message", {a: 1}, function(err) {
+				if (err) throw err;
+				done();
+			})
+		});
+	});
+	describe("exception", function() {
+		it("should work if message is set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.exception("message");
+		});
+		it("should work if origin and message are set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.exception("origin", "message");
+		});
+		it("should work if message and metadata are set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.exception("message", {a: 1});
+		});
+		it("should work if origin, message and metadata are set", function(done) {
+			logger.once("error", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.exception("origin", "message", {a: 1});
+		});
+		it("should work if all params are set", function(done) {
+			logger.exception("origin", "message", {a: 1}, function(err) {
+				if (err) throw err;
+				done();
+			})
+		});
+	});
+	describe("critical", function() {
+		it("should work if message is set", function(done) {
+			logger.once("critical", function(log) {
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.critical("message");
+		});
+		it("should work if origin and message are set", function(done) {
+			logger.once("critical", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				done();
+			});
+			logger.critical("origin", "message");
+		});
+		it("should work if message and metadata are set", function(done) {
+			logger.once("critical", function(log) {
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.critical("message", {a: 1});
+		});
+		it("should work if origin, message and metadata are set", function(done) {
+			logger.once("critical", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.critical("origin", "message", {a: 1});
+		});
+		it("should work if all params are set", function(done) {
+			logger.critical("origin", "message", {a: 1}, function(err) {
+				if (err) throw err;
+				done();
+			})
+		});
+	});
 	describe("fullOrigin", function() {
 		it("should be test/api.js in line 87", function(done) {
 			logger.once("debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 87, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 247, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
