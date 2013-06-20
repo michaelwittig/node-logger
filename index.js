@@ -132,6 +132,20 @@ exports.critical = function(origin, message, metadata, callback) {
 	log("critical", arguments);
 };
 exports.exception = function(origin, message, err, callback) {
+	var i;
+	for (i = 0; i < arguments.length; i += 1) {
+		var arg = arguments[i];
+		if (arg instanceof Error) {
+			var stack = (typeof arg.stack === "string") ? arg.stack.replace(/    at /g, "").split("\n") : [];
+			arguments[i] = {
+				message: arg.message,
+				type: (stack.length > 0) ? stack[0].split(":")[0] : "",
+				fileName: arg.fileName,
+				lineNumber: arg.lineNumber,
+				stack: stack.slice(1)
+			};
+		}
+	}
 	log("error", arguments);
 };
 exports.on = function(level, listener) {

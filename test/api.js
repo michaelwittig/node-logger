@@ -161,42 +161,32 @@ describe("API", function(){
 		});
 	});
 	describe("exception", function() {
-		it("should work if message is set", function(done) {
+		it("should work if message and error are set", function(done) {
 			logger.once("error", function(log) {
 				assert.equal(log.message, "message");
+				assert.equal(log.metadata.message, "test");
+				assert.equal(log.metadata.type, "Error");
 				done();
 			});
-			logger.exception("message");
+			logger.exception("message", new Error("test"));
 		});
-		it("should work if origin and message are set", function(done) {
+		it("should work if origin, message and error are set", function(done) {
 			logger.once("error", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
+				assert.equal(log.metadata.message, "test");
+				assert.equal(log.metadata.type, "Error");
 				done();
 			});
-			logger.exception("origin", "message");
-		});
-		it("should work if message and metadata are set", function(done) {
-			logger.once("error", function(log) {
-				assert.equal(log.message, "message");
-				assert.deepEqual(log.metadata, {a: 1});
-				done();
-			});
-			logger.exception("message", {a: 1});
-		});
-		it("should work if origin, message and metadata are set", function(done) {
-			logger.once("error", function(log) {
-				assert.equal(log.origin, "origin");
-				assert.equal(log.message, "message");
-				assert.deepEqual(log.metadata, {a: 1});
-				done();
-			});
-			logger.exception("origin", "message", {a: 1});
+			logger.exception("origin", "message", new Error("test"));
 		});
 		it("should work if all params are set", function(done) {
-			logger.exception("origin", "message", {a: 1}, function(err) {
-				if (err) throw err;
-				done();
+			logger.exception("origin", "message", new Error("test"), function(err) {
+				if (err) {
+					throw err;
+				} else {
+					done();
+				}
 			})
 		});
 	});
@@ -260,10 +250,10 @@ describe("API", function(){
 		});
 	});
 	describe("fullOrigin", function() {
-		it("should be test/api.js in line 269", function(done) {
+		it("should be test/api.js in line 259", function(done) {
 			logger.once("debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 269, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 259, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
