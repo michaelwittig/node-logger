@@ -13,6 +13,17 @@ DummyEndpoint.prototype.stop = function(errCallback) {
 	errCallback();
 };
 
+function ErrorEndpoint() {
+	logger.Endpoint.call(this, true, true, true, true, "error");
+}
+util.inherits(ErrorEndpoint, logger.Endpoint);
+ErrorEndpoint.prototype.log = function(log, errCallback) {
+	errCallback(new Error("error"));
+};
+ErrorEndpoint.prototype.stop = function(errCallback) {
+	errCallback();
+};
+
 logger.append(new DummyEndpoint());
 logger.fullOrigin();
 
@@ -33,11 +44,43 @@ describe("API", function() {
 		});
 		it("should emit events", function(done){
 			var endpoint = new logger.Endpoint(true, true, true, true, "test");
-			endpoint.on("test", function(err) {
+			endpoint.once("test", function(err) {
 				if (err) throw err;
 				done();
 			});
 			endpoint.emit("test");
+		});
+	});
+	describe("logger", function() {
+		it("should emit endpoint_error Event on error event", function(done){
+			var endpoint = new ErrorEndpoint();
+			logger.append(endpoint);
+			logger.once("endpoint_error", function(endpoint, err) {
+				if (err) {
+					logger.remove(endpoint, function(err) {
+						if (err) {
+							throw err;
+						}
+						done();
+					});
+				}
+			});
+			endpoint.emit("error", new Error("error"));
+		});
+		it("should emit endpoint_error Event on error return", function(done){
+			var endpoint = new ErrorEndpoint();
+			logger.append(endpoint);
+			logger.once("endpoint_error", function(endpoint, err) {
+				if (err) {
+					logger.remove(endpoint, function(err) {
+						if (err) {
+							throw err;
+						}
+						done();
+					});
+				}
+			});
+			logger.debug("test");
 		});
 	});
 	describe("debug", function() {
@@ -250,10 +293,10 @@ describe("API", function() {
 		});
 	});
 	describe("fullOrigin", function() {
-		it("should be test/api.js in line 259", function(done) {
+		it("should be test/api.js in line 302", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 259, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 302, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
