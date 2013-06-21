@@ -7,11 +7,12 @@ var emitter = new events.EventEmitter();
 var endpoints = [];
 var fullOrigin = false;
 
-function Endpoint(debug, info, error, critical) {
+function Endpoint(debug, info, error, critical, name) {
 	assert.bool(debug, "debug");
 	assert.bool(info, "info");
 	assert.bool(error, "error");
 	assert.bool(critical, "critical");
+	assert.string(name, "name");
 	events.EventEmitter.call(this);
 	this.levels = {
 		debug: debug,
@@ -19,6 +20,7 @@ function Endpoint(debug, info, error, critical) {
 		error: error,
 		critical: critical
 	};
+	this.name = name;
 	this.logErrCount = 0;
 }
 util.inherits(Endpoint, events.EventEmitter);
@@ -98,25 +100,29 @@ function log(level, args) {
 	}
 	var endpointCallbacks = 0, endpointError = undefined;
 	endpoints.forEach(function(endpoint) {
-		if (endpoint.levels[data.level] === true) {
-			endpoint.log(data, function(err) {
-				if (err) {
-					endpoint.logErrCount += 1;
-					endpointError = err;
-				}
-				endpointCallbacks += 1;
-				if (endpointCallbacks ===  endpoints.length) {
-					try {
+		try {
+			if (endpoint.levels[data.level] === true) {
+				endpoint.log(data, function(err) {
+					if (err) {
+						endpoint.logErrCount += 1;
+						endpointError = err;
+						emitter.emit("endpoint_error", endpoint, err);
+					}
+					endpointCallbacks += 1;
+					if (endpointCallbacks ===  endpoints.length) {
 						if (callback) {
 							callback(endpointError);
 						}
-					} finally {
-						emitter.emit("level:" + data.level, data);
 					}
-				}
-			});
+				});
+			}
+		} catch (err) {
+			endpoint.logErrCount += 1;
+			endpointError = err;
+			emitter.emit("endpoint_error", endpoint, err);
 		}
 	});
+	emitter.emit("level_" + data.level, data);
 }
 
 exports.debug = function(origin, message, metadata, callback) {
@@ -148,30 +154,30 @@ exports.exception = function(origin, message, err, callback) {
 	}
 	log("error", arguments);
 };
-exports.on = function(level, listener) {
-	assert.string(level, "level");
+exports.on = function(event, listener) {
+	assert.string(event, "event");
 	assert.func(listener, "listener");
-	emitter.on("level:" + level, listener);
+	emitter.on(event, listener);
 };
-exports.addListener = function(level, listener) {
-	assert.string(level, "level");
+exports.addListener = function(event, listener) {
+	assert.string(event, "event");
 	assert.func(listener, "listener");
-	emitter.addListener("level:" + level, listener);
+	emitter.addListener(event, listener);
 };
-exports.once = function(level, listener) {
-	assert.string(level, "level");
+exports.once = function(event, listener) {
+	assert.string(event, "event");
 	assert.func(listener, "listener");
-	emitter.once("level:" + level, listener);
+	emitter.once(event, listener);
 };
-exports.removeListener = function(level, listener) {
-	assert.string(level, "level");
+exports.removeListener = function(event, listener) {
+	assert.string(event, "event");
 	assert.func(listener, "listener");
-	emitter.removeListener("level:" + level, listener);
+	emitter.removeListener(event, listener);
 };
-exports.removeAllListeners = function(level) {
-	assert.optionalString(level, "level");
-	if (level) {
-		emitter.removeAllListeners("level:" + level);
+exports.removeAllListeners = function(event) {
+	assert.optionalString(event, "event");
+	if (event) {
+		emitter.removeAllListeners(event);
 	} else {
 		emitter.removeAllListeners();
 	}
@@ -180,8 +186,9 @@ exports.append = function(endpoint) {
 	assert.ok(endpoint instanceof Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint.stop, "endpoint.stop");
-	endpoint.on("error", function() {
+	endpoint.on("error", function(err) {
 		endpoint.logErrCount += 1;
+		emitter.emit("endpoint_error", endpoint, err);
 	});
 	endpoints.push(endpoint);
 };
@@ -193,6 +200,7 @@ exports.remove = function(endpoint, errCallback) {
 	var idx = endpoints.indexOf(endpoint);
 	endpoints.splice(idx, 1);
 	endpoint.stop(function(err) {
+		endpoint.removeAllListeners();
 		if (err)  {
 			errCallback(err);
 		} else {

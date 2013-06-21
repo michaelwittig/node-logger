@@ -3,7 +3,7 @@ var assert = require("assert-plus"),
 	logger = require("../index");
 
 function DummyEndpoint() {
-	logger.Endpoint.call(this, true, true, true, true);
+	logger.Endpoint.call(this, true, true, true, true, "dummy");
 }
 util.inherits(DummyEndpoint, logger.Endpoint);
 DummyEndpoint.prototype.log = function(log, errCallback) {
@@ -16,23 +16,23 @@ DummyEndpoint.prototype.stop = function(errCallback) {
 logger.append(new DummyEndpoint());
 logger.fullOrigin();
 
-describe("API", function(){
+describe("API", function() {
 	describe("Endpoint", function() {
-		it("should work if all 4 params are set", function(){
-			new logger.Endpoint(true, true, true, true);
+		it("should work if all params are set", function(){
+			new logger.Endpoint(true, true, true, true, "test");
 		});
-		it("should not work if onf of 4 params are not set", function(){
+		it("should not work if one of params are not set", function(){
 			assert.throws(function() {
-				new logger.Endpoint(true, true, true);
+				new logger.Endpoint(true, true, true, true);
 			});
 		});
-		it("should not work if onf of 4 params is not not bool", function(){
+		it("should not work if one of params is not not bool", function(){
 			assert.throws(function() {
-				new logger.Endpoint(true, true, true, "true");
+				new logger.Endpoint(true, true, true, "true", "test");
 			});
 		});
 		it("should emit events", function(done){
-			var endpoint = new logger.Endpoint(true, true, true, true);
+			var endpoint = new logger.Endpoint(true, true, true, true, "test");
 			endpoint.on("test", function(err) {
 				if (err) throw err;
 				done();
@@ -42,14 +42,14 @@ describe("API", function(){
 	});
 	describe("debug", function() {
 		it("should work if message is set", function(done) {
-			logger.once("debug", function(log) {
+			logger.once("level_debug", function(log) {
 				assert.equal(log.message, "message");
 				done();
 			});
 			logger.debug("message");
 		});
 		it("should work if origin and message are set", function(done) {
-			logger.once("debug", function(log) {
+			logger.once("level_debug", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				done();
@@ -57,7 +57,7 @@ describe("API", function(){
 			logger.debug("origin", "message");
 		});
 		it("should work if message and metadata are set", function(done) {
-			logger.once("debug", function(log) {
+			logger.once("level_debug", function(log) {
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
@@ -65,7 +65,7 @@ describe("API", function(){
 			logger.debug("message", {a: 1});
 		});
 		it("should work if origin, message and metadata are set", function(done) {
-			logger.once("debug", function(log) {
+			logger.once("level_debug", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
@@ -82,14 +82,14 @@ describe("API", function(){
 	});
 	describe("info", function() {
 		it("should work if message is set", function(done) {
-			logger.once("info", function(log) {
+			logger.once("level_info", function(log) {
 				assert.equal(log.message, "message");
 				done();
 			});
 			logger.info("message");
 		});
 		it("should work if origin and message are set", function(done) {
-			logger.once("info", function(log) {
+			logger.once("level_info", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				done();
@@ -97,7 +97,7 @@ describe("API", function(){
 			logger.info("origin", "message");
 		});
 		it("should work if message and metadata are set", function(done) {
-			logger.once("info", function(log) {
+			logger.once("level_info", function(log) {
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
@@ -105,7 +105,7 @@ describe("API", function(){
 			logger.info("message", {a: 1});
 		});
 		it("should work if origin, message and metadata are set", function(done) {
-			logger.once("info", function(log) {
+			logger.once("level_info", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
@@ -122,14 +122,14 @@ describe("API", function(){
 	});
 	describe("error", function() {
 		it("should work if message is set", function(done) {
-			logger.once("error", function(log) {
+			logger.once("level_error", function(log) {
 				assert.equal(log.message, "message");
 				done();
 			});
 			logger.error("message");
 		});
 		it("should work if origin and message are set", function(done) {
-			logger.once("error", function(log) {
+			logger.once("level_error", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				done();
@@ -137,7 +137,7 @@ describe("API", function(){
 			logger.error("origin", "message");
 		});
 		it("should work if message and metadata are set", function(done) {
-			logger.once("error", function(log) {
+			logger.once("level_error", function(log) {
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
@@ -145,7 +145,7 @@ describe("API", function(){
 			logger.error("message", {a: 1});
 		});
 		it("should work if origin, message and metadata are set", function(done) {
-			logger.once("error", function(log) {
+			logger.once("level_error", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
@@ -162,7 +162,7 @@ describe("API", function(){
 	});
 	describe("exception", function() {
 		it("should work if message and error are set", function(done) {
-			logger.once("error", function(log) {
+			logger.once("level_error", function(log) {
 				assert.equal(log.message, "message");
 				assert.equal(log.metadata.message, "test");
 				assert.equal(log.metadata.type, "Error");
@@ -171,7 +171,7 @@ describe("API", function(){
 			logger.exception("message", new Error("test"));
 		});
 		it("should work if origin, message and error are set", function(done) {
-			logger.once("error", function(log) {
+			logger.once("level_error", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				assert.equal(log.metadata.message, "test");
@@ -192,14 +192,14 @@ describe("API", function(){
 	});
 	describe("critical", function() {
 		it("should work if message is set", function(done) {
-			logger.once("critical", function(log) {
+			logger.once("level_critical", function(log) {
 				assert.equal(log.message, "message");
 				done();
 			});
 			logger.critical("message");
 		});
 		it("should work if origin and message are set", function(done) {
-			logger.once("critical", function(log) {
+			logger.once("level_critical", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				done();
@@ -207,7 +207,7 @@ describe("API", function(){
 			logger.critical("origin", "message");
 		});
 		it("should work if message and metadata are set", function(done) {
-			logger.once("critical", function(log) {
+			logger.once("level_critical", function(log) {
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
@@ -215,7 +215,7 @@ describe("API", function(){
 			logger.critical("message", {a: 1});
 		});
 		it("should work if origin, message and metadata are set", function(done) {
-			logger.once("critical", function(log) {
+			logger.once("level_critical", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
@@ -251,7 +251,7 @@ describe("API", function(){
 	});
 	describe("fullOrigin", function() {
 		it("should be test/api.js in line 259", function(done) {
-			logger.once("debug", function(log) {
+			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
 				assert.equal(log.fullOrigin.line, 259, "log.fullOrigin.line");
 				done();

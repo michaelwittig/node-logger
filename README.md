@@ -125,38 +125,38 @@ The log object contains the following fields:
 
 The cinovo-logger is also an [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter).
 
-#### on, addListener(level, listener)
+#### on, addListener(event, listener)
 
-Adds a listener to the end of the listeners array for the specified evel.
+Adds a listener to the end of the listeners array for the specified event.
 
-* `level`: String["debug", "warning", "error", "critical"]
+* `event`: String
 * `listener`: Function(level, log)
     * `level`: String["debug", "warning", "error", "critical"]
     * `log`: Log
 
-#### once(level, listener)
+#### once(event, listener)
 
-Adds a **one time** listener for the level. This listener is invoked only the next time the level is fired, after which it is removed.
+Adds a **one time** listener for the event. This listener is invoked only the next time the level is fired, after which it is removed.
 
-* `level`: String["debug", "warning", "error", "critical"]
+* `event`: String
 * `listener`: Function(level, log)
     * `level`: String["debug", "warning", "error", "critical"]
     * `log`: Log
 
-#### removeListener(level, listener)
+#### removeListener(event, listener)
 
 Remove a listener from the listener array for the specified event.
 
-* `level`: String["debug", "warning", "error", "critical"]
+* `event`: String
 * `listener`: Function(level, log)
     * `level`: String["debug", "warning", "error", "critical"]
     * `log`: Log
 
-#### removeAllListeners([level])
+#### removeAllListeners([event])
 
 Removes all listeners, or those of the specified event.
 
-* `level`: String["debug", "warning", "error", "critical"] (optional)
+* `event`: String (optional)
 
 ### append(appender)
 
@@ -186,6 +186,39 @@ Activates `fullOrigin` output in `log`. Locates the caller of an log function `d
 	fn: String of the invoked function name
 }
 `````
+
+### Events
+
+#### level_debug(log)
+
+On `debug` log.
+
+* `log`: Log
+
+#### level_info(log)
+
+On `info` log.
+
+* `log`: Log
+
+#### level_error(log)
+
+On `error` log.
+
+* `log`: Log
+
+#### level_critical(log)
+
+On `critical` log.
+
+* `log`: Log
+
+#### endpoint_error(endpoint, err)
+
+If an endpoint.log() returned an error or an error was emitted by an endpoint.
+
+* `endpoint`: Endpoint
+* `err`: Error
 
 ## Custom Endpoint
 
