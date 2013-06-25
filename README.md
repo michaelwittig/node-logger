@@ -213,6 +213,12 @@ On `critical` log.
 
 * `log`: Log
 
+#### error(err)
+
+If you use on of the log methods `debug`, `info`, `error`, `exception`, `critical` without the optional `callback` and an Error occurs it is emitted.
+
+* `err`: Error
+
 #### endpoint_error(endpoint, err)
 
 If an endpoint.log() returned an error or an error was emitted by an endpoint.

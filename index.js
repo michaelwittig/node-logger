@@ -100,26 +100,24 @@ function log(level, args) {
 	}
 	var endpointCallbacks = 0, endpointError = undefined;
 	endpoints.forEach(function(endpoint) {
-		try {
-			if (endpoint.levels[data.level] === true) {
-				endpoint.log(data, function(err) {
-					if (err) {
-						endpoint.logErrCount += 1;
-						endpointError = err;
-						emitter.emit("endpoint_error", endpoint, err);
-					}
-					endpointCallbacks += 1;
-					if (endpointCallbacks ===  endpoints.length) {
-						if (callback) {
-							callback(endpointError);
+		if (endpoint.levels[data.level] === true) {
+			endpoint.log(data, function(err) {
+				if (err) {
+					endpoint.logErrCount += 1;
+					endpointError = err;
+					emitter.emit("endpoint_error", endpoint, err);
+				}
+				endpointCallbacks += 1;
+				if (endpointCallbacks ===  endpoints.length) {
+					if (callback) {
+						callback(endpointError);
+					} else {
+						if (endpointError) {
+							emitter.emit("error", endpointError);
 						}
 					}
-				});
-			}
-		} catch (err) {
-			endpoint.logErrCount += 1;
-			endpointError = err;
-			emitter.emit("endpoint_error", endpoint, err);
+				}
+			});
 		}
 	});
 	emitter.emit("level_" + data.level, data);
