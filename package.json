@@ -1,6 +1,6 @@
 {
 	"name": "cinovo-logger",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Async logger for Node.js with multiple endpoints.",
 	"keywords": [
 		"logger",
@@ -16,6 +16,10 @@
 			"email": "andreas.wittig@cinovo.de"
 		}
 	],
+	"licenses": [{
+		"type": "Apache License, Version 2.0",
+		"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+	}],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/cinovo/node-logger.git"
