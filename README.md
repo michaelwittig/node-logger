@@ -35,7 +35,7 @@ There are some endpoints available:
 * [cinovo-logger-syslog](https://github.com/cinovo/node-logger-syslog)
 * [cinovo-logger-aws](https://github.com/cinovo/node-logger-aws)
 
-You could also write your own endpoint.
+You could also write your own endpoint (see Custom Endpoint).
 
 If you wish to log to console just:
 
@@ -130,27 +130,21 @@ The cinovo-logger is also an [EventEmitter](http://nodejs.org/api/events.html#ev
 Adds a listener to the end of the listeners array for the specified event.
 
 * `event`: String
-* `listener`: Function(level, log)
-    * `level`: String["debug", "warning", "error", "critical"]
-    * `log`: Log
+* `listener`: Function - see Events for signature
 
 #### once(event, listener)
 
 Adds a **one time** listener for the event. This listener is invoked only the next time the level is fired, after which it is removed.
 
 * `event`: String
-* `listener`: Function(level, log)
-    * `level`: String["debug", "warning", "error", "critical"]
-    * `log`: Log
+* `listener`: Function - see Events for signature
 
 #### removeListener(event, listener)
 
 Remove a listener from the listener array for the specified event.
 
 * `event`: String
-* `listener`: Function(level, log)
-    * `level`: String["debug", "warning", "error", "critical"]
-    * `log`: Log
+* `listener`: Function - see Events for signature
 
 #### removeAllListeners([event])
 
@@ -162,13 +156,13 @@ Removes all listeners, or those of the specified event.
 
 * `appender`: must extend logger.Endpoint see **Custom Endpoint**
 
-### remove(appender, errCallback)
+### remove(appender, callback)
 
 * `appender`: must extend logger.Endpoint see **Custom Endpoint**
 * `errCallback`: Function(err)
     * `err`: Error
 
-### stop(errCallback)
+### stop(callback)
 
 Stop all endpoints to avoid data loss.
 
@@ -228,4 +222,23 @@ If an endpoint.log() returned an error or an error was emitted by an endpoint.
 
 ## Custom Endpoint
 
-TODO
+You must extend the cinovo-logger.Endpoint.
+
+`````javascript
+function CustomEndpoint() {
+	logger.Endpoint.call(this, true, true, true, true, "dummy");
+}
+util.inherits(CustomEndpoint, logger.Endpoint);
+````
+
+And you must implement at least this two methods:
+`````javascript
+CustomEndpoint.prototype.log = function(log, callback) {
+	// write the log object and call the callback if the log is written
+	callback();
+};
+CustomEndpoint.prototype.stop = function(callback) {
+	/// stop the endpoint, call the callback if finished and all logs are written
+	callback();
+};
+`````
