@@ -225,6 +225,7 @@ If an endpoint.log() returned an error or an error was emitted by an endpoint.
 You must extend the cinovo-logger.Endpoint.
 
 `````javascript
+var logger = require("cinovo-logger");
 function CustomEndpoint(debug, info, error, critical) {
 	logger.Endpoint.call(this, debug, info, error, critical, "customName");
 }
