@@ -355,4 +355,44 @@ describe("API", function() {
 			});
 		});
 	});
+	describe("createLogger", function() {
+		it("should work", function(done) {
+			var e = new DummyEndpoint();
+			var l = logger.createLogger();
+			l.append(e);
+			l.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
+				assert.equal(log.message, "test");
+				assert.equal(log.metadata, undefined);
+				assert.equal(log.fullOrigin, undefined);
+				l.stop(function(err) {
+					if (err) {
+						throw err;
+					} else {
+						done();
+					}
+				});
+			})
+			l.debug("test");
+		});
+		it("should work with fullOrigin cgf", function(done) {
+			var e = new DummyEndpoint();
+			var l = logger.createLogger({fullOrigin: true});
+			l.append(e);
+			l.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
+				assert.equal(log.message, "test");
+				assert.equal(log.metadata, undefined);
+				assert.equal(log.fullOrigin.file, "test/api.js");
+				l.stop(function(err) {
+					if (err) {
+						throw err;
+					} else {
+						done();
+					}
+				});
+			})
+			l.debug("test");
+		});
+	});
 });

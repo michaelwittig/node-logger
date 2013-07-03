@@ -61,6 +61,18 @@ logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(er
 
 Now you can log to multiple endpoints.
 
+## Multiple logger instances
+
+From time to time it makes sense to have more than one logger instance.
+
+`````javascript
+var myLogger = require("cinovo-logger").createLogger();
+
+myLogger.append(require("cinovo-logger-console")(true, true, true, true));
+
+myLogger.debug("all values are ok");
+`````
+
 ## API
 
 ### debug, info, error, critical([origin], message, [metadata], [callback])

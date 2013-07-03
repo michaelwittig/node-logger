@@ -3,29 +3,6 @@ var events = require("events"),
 	assert = require("assert-plus"),
 	os = require("os");
 
-var emitter = new events.EventEmitter();
-var endpoints = [];
-var fullOrigin = false;
-var stopped = false;
-
-function Endpoint(debug, info, error, critical, name) {
-	assert.bool(debug, "debug");
-	assert.bool(info, "info");
-	assert.bool(error, "error");
-	assert.bool(critical, "critical");
-	assert.string(name, "name");
-	events.EventEmitter.call(this);
-	this.levels = {
-		debug: debug,
-		info: info,
-		error: error,
-		critical: critical
-	};
-	this.name = name;
-	this.logErrCount = 0;
-}
-util.inherits(Endpoint, events.EventEmitter);
-
 function getFullOrigin() {
 	var depth = 5;
 	var e = new Error();
@@ -50,7 +27,7 @@ function getFullOrigin() {
 	};
 }
 
-function getData(level, args) {
+function getData(level, fullOrigin, args) {
 	var data = {
 		level: level,
 		date: new Date(),
@@ -90,57 +67,7 @@ function getData(level, args) {
 	return data;
 }
 
-function log(level, args) {
-	if (stopped === true) {
-		new Error("Already stopped");
-	}
-	if (endpoints.length === 0) {
-		throw new Error("No endpoints appended");
-	}
-	var callback = undefined;
-	if (typeof args[args.length - 1] === "function") {
-		callback =  args[args.length - 1];
-		args = Array.prototype.slice.apply(args, [0, args.length - 1]);
-	}
-	var data = getData(level, args);
-	var endpointCallbacks = 0, endpointError = undefined;
-	endpoints.forEach(function(endpoint) {
-		if (endpoint.levels[data.level] === true) {
-			endpoint.log(data, function(err) {
-				if (err) {
-					endpoint.logErrCount += 1;
-					endpointError = err;
-					emitter.emit("endpoint_error", endpoint, err);
-				}
-				endpointCallbacks += 1;
-				if (endpointCallbacks ===  endpoints.length) {
-					if (callback) {
-						callback(endpointError);
-					} else {
-						if (endpointError) {
-							emitter.emit("error", endpointError);
-						}
-					}
-				}
-			});
-		}
-	});
-	emitter.emit("level_" + data.level, data);
-}
-
-exports.debug = function(origin, message, metadata, callback) {
-	log("debug", arguments);
-};
-exports.info = function(origin, message, metadata, callback) {
-	log("info", arguments);
-};
-exports.error = function(origin, message, metadata, callback) {
-	log("error", arguments);
-};
-exports.critical = function(origin, message, metadata, callback) {
-	log("critical", arguments);
-};
-exports.exception = function(origin, message, err, callback) {
+function extractError(arguments) {
 	var i;
 	for (i = 0; i < arguments.length; i += 1) {
 		var arg = arguments[i];
@@ -155,90 +82,186 @@ exports.exception = function(origin, message, err, callback) {
 			};
 		}
 	}
-	log("error", arguments);
-};
-exports.on = function(event, listener) {
-	assert.string(event, "event");
-	assert.func(listener, "listener");
-	emitter.on(event, listener);
-};
-exports.addListener = function(event, listener) {
-	assert.string(event, "event");
-	assert.func(listener, "listener");
-	emitter.addListener(event, listener);
-};
-exports.once = function(event, listener) {
-	assert.string(event, "event");
-	assert.func(listener, "listener");
-	emitter.once(event, listener);
-};
-exports.removeListener = function(event, listener) {
-	assert.string(event, "event");
-	assert.func(listener, "listener");
-	emitter.removeListener(event, listener);
-};
-exports.removeAllListeners = function(event) {
-	assert.optionalString(event, "event");
-	if (event) {
-		emitter.removeAllListeners(event);
-	} else {
-		emitter.removeAllListeners();
+	return arguments;
+}
+
+function Endpoint(debug, info, error, critical, name) {
+	assert.bool(debug, "debug");
+	assert.bool(info, "info");
+	assert.bool(error, "error");
+	assert.bool(critical, "critical");
+	assert.string(name, "name");
+	events.EventEmitter.call(this);
+	this.levels = {
+		debug: debug,
+		info: info,
+		error: error,
+		critical: critical
+	};
+	this.name = name;
+	this.logErrCount = 0;
+}
+util.inherits(Endpoint, events.EventEmitter);
+
+function Logger(cfg) {
+	this.cfg = cfg || {};
+	this.endpoints = [];
+	this.fullOrigin = false;
+	this.stopped = false;
+}
+util.inherits(Logger, events.EventEmitter);
+Logger.prototype.log = function(level, args) {
+	if (this.stopped === true) {
+		new Error("Already stopped");
 	}
+	if (this.endpoints.length === 0) {
+		throw new Error("No endpoints appended");
+	}
+	var callback = undefined;
+	if (typeof args[args.length - 1] === "function") {
+		callback =  args[args.length - 1];
+		args = Array.prototype.slice.apply(args, [0, args.length - 1]);
+	}
+	var data = getData(level, this.cfg.fullOrigin || this.fullOrigin, args);
+	var endpointCallbacks = 0, endpointError = undefined;
+	var self = this;
+	this.endpoints.forEach(function(endpoint) {
+		if (endpoint.levels[data.level] === true) {
+			endpoint.log(data, function(err) {
+				if (err) {
+					endpoint.logErrCount += 1;
+					endpointError = err;
+					self.emit("endpoint_error", endpoint, err);
+				}
+				endpointCallbacks += 1;
+				if (endpointCallbacks ===  self.endpoints.length) {
+					if (callback) {
+						callback(endpointError);
+					} else {
+						if (endpointError) {
+							self.emit("error", endpointError);
+						}
+					}
+				}
+			});
+		}
+	});
+	this.emit("level_" + data.level, data);
 };
-exports.append = function(endpoint) {
+Logger.prototype.debug = function() {
+	this.log("debug", arguments);
+};
+Logger.prototype.info = function() {
+	this.log("info", arguments);
+};
+Logger.prototype.error = function() {
+	this.log("error", arguments);
+};
+Logger.prototype.exception = function() {
+	this.log("error", extractError(arguments));
+};
+
+Logger.prototype.append = function(endpoint) {
 	assert.ok(endpoint instanceof Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint.stop, "endpoint.stop");
 	// TODO check if the endpoint was stopped before
+	var self = this;
 	endpoint.on("error", function(err) {
 		endpoint.logErrCount += 1;
-		emitter.emit("endpoint_error", endpoint, err);
+		self.emit("endpoint_error", endpoint, err);
 	});
-	endpoints.push(endpoint);
+	this.endpoints.push(endpoint);
 };
-exports.remove = function(endpoint, errCallback) {
+
+Logger.prototype.remove = function(endpoint, callback) {
 	assert.ok(endpoint instanceof Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint.stop, "endpoint.stop");
-	assert.func(errCallback, "errCallback");
-	var idx = endpoints.indexOf(endpoint);
+	assert.func(callback, "callback");
+	var idx = this.endpoints.indexOf(endpoint);
 	if (idx !== -1) {
-		endpoints.splice(idx, 1);
+		this.endpoints.splice(idx, 1);
 		endpoint.stop(function(err) {
 			endpoint.removeAllListeners();
 			if (err)  {
-				errCallback(err);
+				callback(err);
 			} else {
-				errCallback();
+				callback();
 			}
 		});
 	} else {
-		errCallback(new Error("Endpoint was not appended"));
+		callback(new Error("Endpoint was not appended"));
 	}
 };
-exports.stop = function(errCallback) {
-	assert.func(errCallback, "errCallback");
-	if (stopped === false) {
-		stopped = true;
-		var endpointCallbacks = 0, endpointError = undefined, n = endpoints.length;
-		endpoints.forEach(function(endpoint) {
+Logger.prototype.stop = function(callback) {
+	assert.func(callback, "callback");
+	if (this.stopped === false) {
+		this.stopped = true;
+		var endpointCallbacks = 0, endpointError = undefined, n = this.endpoints.length;
+		this.endpoints.forEach(function(endpoint) {
 			endpoint.stop(function(err) {
 				if (err) {
 					endpointError = err;
 				}
 				endpointCallbacks += 1;
 				if (endpointCallbacks === n) {
-					errCallback(endpointError);
+					callback(endpointError);
 				}
 			});
 		});
-		endpoints = [];
-		emitter.removeAllListeners();
+		this.endpoints = [];
+		this.removeAllListeners();
 	} else {
-		errCallback(new Error("Already stopped"));
+		callback(new Error("Already stopped"));
 	}
 };
-exports.Endpoint = Endpoint;
+
+var defaultLogger = new Logger();
+
+exports.debug = function(origin, message, metadata, callback) {
+	defaultLogger.log("debug", arguments);
+};
+exports.info = function(origin, message, metadata, callback) {
+	defaultLogger.log("info", arguments);
+};
+exports.error = function(origin, message, metadata, callback) {
+	defaultLogger.log("error", arguments);
+};
+exports.critical = function(origin, message, metadata, callback) {
+	defaultLogger.log("critical", arguments);
+};
+exports.exception = function(origin, message, err, callback) {
+	defaultLogger.log("error", extractError(arguments));
+};
+exports.on = function(event, listener) {
+	defaultLogger.on(event, listener);
+};
+exports.addListener = function(event, listener) {
+	defaultLogger.addListener(event, listener);
+};
+exports.once = function(event, listener) {
+	defaultLogger.once(event, listener);
+};
+exports.removeListener = function(event, listener) {
+	defaultLogger.removeListener(event, listener);
+};
+exports.removeAllListeners = function(event) {
+	defaultLogger.removeAllListeners(event);
+};
+exports.append = function(endpoint) {
+	defaultLogger.append(endpoint);
+};
+exports.remove = function(endpoint, callback) {
+	defaultLogger.remove(endpoint, callback);
+};
+exports.stop = function(callback) {
+	defaultLogger.stop(callback);
+};
 exports.fullOrigin = function() {
-	fullOrigin = true;
+	defaultLogger.fullOrigin = true;
+};
+exports.Endpoint = Endpoint;
+exports.createLogger = function(cfg) {
+	return new Logger(cfg);
 };
