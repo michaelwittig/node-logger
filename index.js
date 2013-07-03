@@ -6,6 +6,7 @@ var events = require("events"),
 var emitter = new events.EventEmitter();
 var endpoints = [];
 var fullOrigin = false;
+var stopped = false;
 
 function Endpoint(debug, info, error, critical, name) {
 	assert.bool(debug, "debug");
@@ -185,6 +186,7 @@ exports.append = function(endpoint) {
 	assert.ok(endpoint instanceof Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint.stop, "endpoint.stop");
+	// TODO check if the endpoint was stopped before
 	endpoint.on("error", function(err) {
 		endpoint.logErrCount += 1;
 		emitter.emit("endpoint_error", endpoint, err);
@@ -197,32 +199,41 @@ exports.remove = function(endpoint, errCallback) {
 	assert.func(endpoint.stop, "endpoint.stop");
 	assert.func(errCallback, "errCallback");
 	var idx = endpoints.indexOf(endpoint);
-	endpoints.splice(idx, 1);
-	endpoint.stop(function(err) {
-		endpoint.removeAllListeners();
-		if (err)  {
-			errCallback(err);
-		} else {
-			errCallback();
-		}
-	});
+	if (idx !== -1) {
+		endpoints.splice(idx, 1);
+		endpoint.stop(function(err) {
+			endpoint.removeAllListeners();
+			if (err)  {
+				errCallback(err);
+			} else {
+				errCallback();
+			}
+		});
+	} else {
+		errCallback(new Error("Endpoint was not appended"));
+	}
 };
 exports.stop = function(errCallback) {
 	assert.func(errCallback, "errCallback");
-	var endpointCallbacks = 0, endpointError = undefined, n = endpoints.length;
-	endpoints.forEach(function(endpoint) {
-		endpoint.stop(function(err) {
-			if (err) {
-				endpointError = err;
-			}
-			endpointCallbacks += 1;
-			if (endpointCallbacks === n) {
-				errCallback(endpointError);
-			}
+	if (stopped === false) {
+		stopped = true;
+		var endpointCallbacks = 0, endpointError = undefined, n = endpoints.length;
+		endpoints.forEach(function(endpoint) {
+			endpoint.stop(function(err) {
+				if (err) {
+					endpointError = err;
+				}
+				endpointCallbacks += 1;
+				if (endpointCallbacks === n) {
+					errCallback(endpointError);
+				}
+			});
 		});
-	});
-	endpoints = [];
-	emitter.removeAllListeners();
+		endpoints = [];
+		emitter.removeAllListeners();
+	} else {
+		errCallback(new Error("Already stopped"));
+	}
 };
 exports.Endpoint = Endpoint;
 exports.fullOrigin = function() {
