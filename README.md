@@ -159,14 +159,14 @@ Removes all listeners, or those of the specified event.
 ### remove(appender, callback)
 
 * `appender`: must extend logger.Endpoint see **Custom Endpoint**
-* `errCallback`: Function(err)
+* `callback`: Function(err)
     * `err`: Error
 
 ### stop(callback)
 
 Stop all endpoints to avoid data loss.
 
-* `errCallback`: Function(err)
+* `callback`: Function(err)
     * `err`: Error
 
 ### fullOrigin()
@@ -224,6 +224,7 @@ If an endpoint.log() returned an error or an error was emitted by an endpoint.
 
 You must extend the cinovo-logger.Endpoint.
 
+
 `````javascript
 var logger = require("cinovo-logger");
 function CustomEndpoint(debug, info, error, critical) {
@@ -233,6 +234,7 @@ util.inherits(CustomEndpoint, logger.Endpoint);
 ````
 
 And you must implement at least this two methods:
+
 `````javascript
 CustomEndpoint.prototype.log = function(log, callback) {
 	// write the log object and call the callback if the log is written
