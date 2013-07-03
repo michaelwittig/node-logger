@@ -56,7 +56,7 @@ function getData(level, args) {
 		pid: process.pid,
 		hostname: os.hostname()
 	};
-	if (args.length >= 3) {
+	if (args.length === 3) {
 		if (typeof args[0] === "string" && typeof args[1] === "string") {
 			data.origin = args[0];
 			data.message = args[1];
@@ -64,7 +64,7 @@ function getData(level, args) {
 		} else {
 			throw new Error("1. and 2. parameter must be a string");
 		}
-	} else if (args.length >= 2) {
+	} else if (args.length === 2) {
 		if (typeof args[0] === "string" && typeof args[1] === "string") {
 			data.origin = args[0];
 			data.message = args[1];
@@ -76,12 +76,12 @@ function getData(level, args) {
 		} else {
 			throw new Error("1. parameter must be a string");
 		}
-	} else if (args.length >= 1) {
+	} else if (args.length === 1) {
 		data.origin = undefined;
 		data.message = args[0];
 		data.metadata = undefined;
 	} else {
-		throw new Error("Only 1, 2, 3 or 4 parameters are allowed");
+		throw new Error("Only 1, 2 or 3 parameters are allowed");
 	}
 	if (fullOrigin) {
 		data.fullOrigin = getFullOrigin();
@@ -93,11 +93,12 @@ function log(level, args) {
 	if (endpoints.length === 0) {
 		throw new Error("No endpoints appended");
 	}
-	var data = getData(level, args);
 	var callback = undefined;
 	if (typeof args[args.length - 1] === "function") {
 		callback =  args[args.length - 1];
+		args = Array.prototype.slice.apply(args, [0, args.length - 1]);
 	}
+	var data = getData(level, args);
 	var endpointCallbacks = 0, endpointError = undefined;
 	endpoints.forEach(function(endpoint) {
 		if (endpoint.levels[data.level] === true) {

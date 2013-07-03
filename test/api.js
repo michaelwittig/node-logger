@@ -86,26 +86,57 @@ describe("API", function() {
 	describe("debug", function() {
 		it("should work if message is set", function(done) {
 			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
 				assert.equal(log.message, "message");
+				assert.equal(log.metadata, undefined);
 				done();
 			});
 			logger.debug("message");
+		});
+		it("should work if message and callback are set", function(done) {
+			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
+				assert.equal(log.message, "message");
+				assert.equal(log.metadata, undefined);
+				done();
+			});
+			logger.debug("message", function() {});
 		});
 		it("should work if origin and message are set", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.origin, "origin");
 				assert.equal(log.message, "message");
+				assert.equal(log.metadata, undefined);
 				done();
 			});
 			logger.debug("origin", "message");
 		});
+		it("should work if origin, message and callback", function(done) {
+			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				assert.equal(log.metadata, undefined);
+				done();
+			});
+			logger.debug("origin", "message", function() {});
+		});
 		it("should work if message and metadata are set", function(done) {
 			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
 				assert.equal(log.message, "message");
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
 			});
 			logger.debug("message", {a: 1});
+		});
+		it("should work if message, metadata and callback are set", function(done) {
+			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.debug("message", {a: 1}, function() {});
 		});
 		it("should work if origin, message and metadata are set", function(done) {
 			logger.once("level_debug", function(log) {
@@ -116,11 +147,20 @@ describe("API", function() {
 			});
 			logger.debug("origin", "message", {a: 1});
 		});
+		it("should work if origin, message, metadata and callback are set", function(done) {
+			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, "origin");
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, {a: 1});
+				done();
+			});
+			logger.debug("origin", "message", {a: 1}, function() {});
+		});
 		it("should work if all params are set", function(done) {
 			logger.debug("origin", "message", {a: 1}, function(err) {
 				if (err) throw err;
 				done();
-			})
+			});
 		});
 	});
 	describe("info", function() {
@@ -296,7 +336,7 @@ describe("API", function() {
 		it("should be test/api.js in line 302", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 302, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 342, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
