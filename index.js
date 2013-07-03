@@ -91,6 +91,9 @@ function getData(level, args) {
 }
 
 function log(level, args) {
+	if (stopped === true) {
+		new Error("Already stopped");
+	}
 	if (endpoints.length === 0) {
 		throw new Error("No endpoints appended");
 	}
