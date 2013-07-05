@@ -205,6 +205,7 @@ Logger.prototype.stop = function(callback) {
 				if (err) {
 					endpointError = err;
 				}
+				endpoint.removeAllListeners();
 				endpointCallbacks += 1;
 				if (endpointCallbacks === n) {
 					self.endpoints = [];
