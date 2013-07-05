@@ -104,6 +104,7 @@ function Endpoint(debug, info, error, critical, name) {
 util.inherits(Endpoint, events.EventEmitter);
 
 function Logger(cfg) {
+	events.EventEmitter.call(this);
 	this.cfg = cfg || {};
 	this.endpoints = [];
 	this.fullOrigin = false;
