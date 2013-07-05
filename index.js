@@ -199,7 +199,7 @@ Logger.prototype.stop = function(callback) {
 	assert.func(callback, "callback");
 	if (this.stopped === false) {
 		this.stopped = true;
-		var endpointCallbacks = 0, endpointError = undefined, n = this.endpoints.length;
+		var endpointCallbacks = 0, endpointError = undefined, n = this.endpoints.length, self = this;
 		this.endpoints.forEach(function(endpoint) {
 			endpoint.stop(function(err) {
 				if (err) {
@@ -207,12 +207,12 @@ Logger.prototype.stop = function(callback) {
 				}
 				endpointCallbacks += 1;
 				if (endpointCallbacks === n) {
+					self.endpoints = [];
+					self.removeAllListeners();
 					callback(endpointError);
 				}
 			});
 		});
-		this.endpoints = [];
-		this.removeAllListeners();
 	} else {
 		callback(new Error("Already stopped"));
 	}
