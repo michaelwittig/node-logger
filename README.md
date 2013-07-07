@@ -73,57 +73,6 @@ myLogger.append(require("cinovo-logger-console")(true, true, true, true));
 myLogger.debug("all values are ok");
 `````
 
-## Configuration
-
-You can configure the logger during creation or after creation.
-
-**during creation:**
-
-`````javascript
-var myLogger = require("cinovo-logger").createLogger(cfg);
-`````
-
-**after creation:**
-
-`````javascript
-var logger = require("cinovo-logger");
-// do something
-logger.cfg = cfg;
-`````
-
-### Options
-
-There are several options available:
-
-#### fullOrigin
-
-`Boolean` - Activates `fullOrigin` output in `log`. (default false)
-
-**Examples:**
-
-`````javascript`
-var cfg = {
-	fullOrigin: true
-};
-````
-
-#### filter
-
-`Object` - Allow or block `log` from `origin` and/or `level`.
-
-**Examples:**
-
-`````javascript`
-var cfg = {
-	filter: {
-		"*": false,					// block everything
-		"*/critical": true,			// but allow critical `level`
-		"myorigin/*": true,			// and allow everything from `origin` myorigin
-		"yourorigin/debug": true,	// and allow everything from `origin` yourorigin and `level` debug
-	}
-};
-````
-
 ## API
 
 ### debug, info, error, critical([origin], message, [metadata], [callback])
@@ -308,3 +257,60 @@ CustomEndpoint.prototype.stop = function(callback) {
 	callback();
 };
 `````
+
+## Configuration
+
+You can configure the logger during creation or after creation.
+
+**during creation:**
+
+`````javascript
+var cfg = {
+	fullOrigin: false,
+	filter: {
+		"*": true
+	}
+};
+var myLogger = require("cinovo-logger").createLogger(cfg);
+`````
+
+**after creation:**
+
+`````javascript
+var logger = require("cinovo-logger");
+// do something
+logger.cfg.fullOrigin = true;
+`````
+
+### Options
+
+There are several options available:
+
+#### fullOrigin
+
+`Boolean` - Activates `fullOrigin` output in `log`. (default false)
+
+**Examples:**
+
+`````javascript`
+var cfg = {
+	fullOrigin: true
+};
+````
+
+#### filter
+
+`Object` - Allow or block `log` from `origin` and/or `level`.
+
+**Examples:**
+
+`````javascript`
+var cfg = {
+	filter: {
+		"*": false,					// block everything
+		"*/critical": true,			// but allow critical `level`
+		"myorigin/*": true,			// and allow everything from `origin` myorigin
+		"yourorigin/debug": true,	// and allow everything from `origin` yourorigin and `level` debug
+	}
+};
+````
