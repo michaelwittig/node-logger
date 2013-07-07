@@ -107,7 +107,9 @@ util.inherits(Endpoint, events.EventEmitter);
 function Logger(cfg) {
 	events.EventEmitter.call(this);
 	this.cfg = cfg || {};
-	if (this.cfg.filter) {
+	if (this.cfg.filter === undefined) {
+		this.cfg.filter = {"*": true};
+	} else {
 		filter.assert(this.cfg.filter);
 	}
 	if (this.cfg.fullOrigin === undefined) {
@@ -130,13 +132,11 @@ Logger.prototype.log = function(level, args) {
 		args = Array.prototype.slice.apply(args, [0, args.length - 1]);
 	}
 	var data = getData(level, this.cfg.fullOrigin, args);
-	if (this.cfg.filter) {
-		if (filter.filter(data, this.cfg.filter) === false) {
-			if (callback) {
-				callback();
-			}
-			return;
+	if (filter.filter(data, this.cfg.filter) === false) {
+		if (callback) {
+			callback();
 		}
+		return;
 	}
 	var endpointCallbacks = 0, endpointError = undefined;
 	var self = this;

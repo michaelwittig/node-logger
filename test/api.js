@@ -397,7 +397,7 @@ describe("API", function() {
 	});
 	describe("filtering", function() {
 		it("should work", function(done) {
-			var l = logger.createLogger({filter: {"test/*": false}});
+			var l = logger.createLogger({filter: {"*": true, "test/*": false}});
 			l.append(new DummyEndpoint());
 			l.once("level_debug", function() {
 				assert.fail("should be filtered");

@@ -51,10 +51,10 @@ describe("filter", function() {
 			filter.assert({"*": true});
 		});
 		it("should be ok for */debug", function(){
-			filter.assert({"*/debug": true});
+			filter.assert({"*": false, "*/debug": true});
 		});
 		it("should be ok for test/*", function(){
-			filter.assert({"test/*": true});
+			filter.assert({"*": false, "test/*": true});
 		});
 		it("should fail if value is not Boolean", function() {
 			assert.throws(function() {
@@ -65,6 +65,11 @@ describe("filter", function() {
 			assert.throws(function() {
 				filter.assert({"abcv": true});
 			});
-		})
+		});
+		it("should fail because there is no default * rule", function() {
+			assert.throws(function() {
+				filter.assert({"test/*": true});
+			});
+		});
 	});
 });

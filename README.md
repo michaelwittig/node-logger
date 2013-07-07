@@ -264,7 +264,7 @@ There are several options available:
 
 ##### fullOrigin
 
-`Boolean` - Activates `fullOrigin` output in `log`. (default false)
+`Boolean` - Activates `fullOrigin` output in `log`. (default: `false`)
 
 **Examples:**
 
@@ -276,14 +276,14 @@ var cfg = {
 
 ##### filter
 
-`Object` - Allow or block `log` from `origin` and/or `level`.
+`Object` - Allow or block `log` from `origin` and/or `level`. (default: `{"*": true}`)
 
 **Examples:**
 
 `````javascript`
 var cfg = {
 	filter: {
-		"*": false,					// block everything
+		"*": false,					// block everything (required)
 		"*/critical": true,			// but allow critical `level`
 		"myorigin/*": true,			// and allow everything from `origin` myorigin
 		"yourorigin/debug": true,	// and allow everything from `origin` yourorigin and `level` debug
