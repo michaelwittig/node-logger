@@ -220,32 +220,6 @@ If an endpoint.log() returned an error or an error was emitted by an endpoint.
 * `endpoint`: Endpoint
 * `err`: Error
 
-## Custom Endpoint
-
-You must extend the cinovo-logger.Endpoint.
-
-
-`````javascript
-var logger = require("cinovo-logger");
-function CustomEndpoint(debug, info, error, critical) {
-	logger.Endpoint.call(this, debug, info, error, critical, "customName");
-}
-util.inherits(CustomEndpoint, logger.Endpoint);
-````
-
-And you must implement at least this two methods:
-
-`````javascript
-CustomEndpoint.prototype.log = function(log, callback) {
-	// write the log object and call the callback if the log is written
-	callback();
-};
-CustomEndpoint.prototype.stop = function(callback) {
-	/// stop the endpoint, call the callback if finished and all logs are written
-	callback();
-};
-`````
-
 ## Advanced Stuff
 
 ### Multiple logger instances
@@ -316,3 +290,28 @@ var cfg = {
 	}
 };
 ````
+
+### Custom Endpoint
+
+You must extend the cinovo-logger.Endpoint.
+
+`````javascript
+var logger = require("cinovo-logger");
+function CustomEndpoint(debug, info, error, critical) {
+	logger.Endpoint.call(this, debug, info, error, critical, "customName");
+}
+util.inherits(CustomEndpoint, logger.Endpoint);
+````
+
+And you must implement at least this two methods:
+
+`````javascript
+CustomEndpoint.prototype.log = function(log, callback) {
+	// write the log object and call the callback if the log is written
+	callback();
+};
+CustomEndpoint.prototype.stop = function(callback) {
+	/// stop the endpoint, call the callback if finished and all logs are written
+	callback();
+};
+`````
