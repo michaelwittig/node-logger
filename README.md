@@ -311,7 +311,11 @@ CustomEndpoint.prototype.log = function(log, callback) {
 	callback();
 };
 CustomEndpoint.prototype.stop = function(callback) {
-	/// stop the endpoint, call the callback if finished and all logs are written
-	callback();
+	// stop the endpoint, call the callback if finished and all logs are written
+	try {
+    	callback();
+    } finally {
+    	this.emit("stop");
+    }
 };
 `````
