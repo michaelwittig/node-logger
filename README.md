@@ -61,18 +61,6 @@ logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(er
 
 Now you can log to multiple endpoints.
 
-## Multiple logger instances
-
-From time to time it makes sense to have more than one logger instance.
-
-`````javascript
-var myLogger = require("cinovo-logger").createLogger();
-
-myLogger.append(require("cinovo-logger-console")(true, true, true, true));
-
-myLogger.debug("all values are ok");
-`````
-
 ## API
 
 ### debug, info, error, critical([origin], message, [metadata], [callback])
@@ -258,7 +246,21 @@ CustomEndpoint.prototype.stop = function(callback) {
 };
 `````
 
-## Configuration
+## Advanced Stuff
+
+### Multiple logger instances
+
+From time to time it makes sense to have more than one logger instance.
+
+`````javascript
+var myLogger = require("cinovo-logger").createLogger();
+
+myLogger.append(require("cinovo-logger-console")(true, true, true, true));
+
+myLogger.debug("all values are ok");
+`````
+
+### Configuration
 
 You can configure the logger during creation or after creation.
 
@@ -282,11 +284,11 @@ var logger = require("cinovo-logger");
 logger.cfg.fullOrigin = true;
 `````
 
-### Options
+#### Options
 
 There are several options available:
 
-#### fullOrigin
+##### fullOrigin
 
 `Boolean` - Activates `fullOrigin` output in `log`. (default false)
 
@@ -298,7 +300,7 @@ var cfg = {
 };
 ````
 
-#### filter
+##### filter
 
 `Object` - Allow or block `log` from `origin` and/or `level`.
 
