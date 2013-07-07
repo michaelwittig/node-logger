@@ -1,7 +1,8 @@
 var events = require("events"),
 	util = require("util"),
 	assert = require("assert-plus"),
-	os = require("os");
+	os = require("os"),
+	filter = require("./lib/filter");
 
 function getFullOrigin() {
 	var depth = 5;
@@ -106,8 +107,13 @@ util.inherits(Endpoint, events.EventEmitter);
 function Logger(cfg) {
 	events.EventEmitter.call(this);
 	this.cfg = cfg || {};
+	if (this.cfg.filter) {
+		filter.assert(this.cfg.filter);
+	}
+	if (this.cfg.fullOrigin === undefined) {
+		this.cfg.fullOrigin = false;
+	}
 	this.endpoints = [];
-	this.fullOrigin = false;
 	this.stopped = false;
 }
 util.inherits(Logger, events.EventEmitter);
@@ -123,7 +129,15 @@ Logger.prototype.log = function(level, args) {
 		callback =  args[args.length - 1];
 		args = Array.prototype.slice.apply(args, [0, args.length - 1]);
 	}
-	var data = getData(level, this.cfg.fullOrigin || this.fullOrigin, args);
+	var data = getData(level, this.cfg.fullOrigin, args);
+	if (this.cfg.filter) {
+		if (filter.filter(data, this.cfg.filter) === false) {
+			if (callback) {
+				callback();
+			}
+			return;
+		}
+	}
 	var endpointCallbacks = 0, endpointError = undefined;
 	var self = this;
 	this.endpoints.forEach(function(endpoint) {
@@ -219,7 +233,7 @@ Logger.prototype.stop = function(callback) {
 	}
 };
 
-var defaultLogger = new Logger();
+var defaultLogger = new Logger({filter: {"*": true}});
 
 exports.debug = function(origin, message, metadata, callback) {
 	defaultLogger.log("debug", arguments);
@@ -261,8 +275,9 @@ exports.stop = function(callback) {
 	defaultLogger.stop(callback);
 };
 exports.fullOrigin = function() {
-	defaultLogger.fullOrigin = true;
+	defaultLogger.cfg.fullOrigin = true;
 };
+exports.cfg = defaultLogger.cfg;
 exports.Endpoint = Endpoint;
 exports.createLogger = function(cfg) {
 	return new Logger(cfg);

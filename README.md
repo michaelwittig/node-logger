@@ -73,6 +73,50 @@ myLogger.append(require("cinovo-logger-console")(true, true, true, true));
 myLogger.debug("all values are ok");
 `````
 
+## Configuration
+
+You can configure the logger during creation or after creation.
+
+### Options
+
+There are several options available:
+
+#### fullOrigin
+
+`Boolean` - Activates `fullOrigin` output in `log`. (default false)
+
+#### filter
+
+`Object` - Allow or block `log`from origin and/or levels.
+
+Examples:
+
+`````javascript`
+var cfg = {
+	filter: {
+		"*": false, // block everything
+		"*/critical": true, // but allow critical `level`
+		"myorigin/*": true, // but allow everything from `origin` myorigin
+		"yourorigin/debug": true, // but allow everything from `origin` yourorigin and `level` debug
+	}
+};
+````
+
+### During creation
+
+This only works if you use:
+
+`````javascript
+var myLogger = require("cinovo-logger").createLogger(cfg);
+`````
+
+### After creation
+
+`````javascript
+var logger = require("cinovo-logger");
+logger.cfg = cfg;
+`````
+
 ## API
 
 ### debug, info, error, critical([origin], message, [metadata], [callback])

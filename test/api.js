@@ -395,4 +395,20 @@ describe("API", function() {
 			l.debug("test");
 		});
 	});
+	describe("filtering", function() {
+		it("should work", function(done) {
+			var l = logger.createLogger({filter: {"test/*": false}});
+			l.append(new DummyEndpoint());
+			l.once("level_debug", function() {
+				assert.fail("should be filtered");
+			});
+			l.debug("test", "message");
+			l.stop(function(err) {
+				if (err) {
+					throw err;
+				}
+				done();
+			});
+		});
+	});
 });
