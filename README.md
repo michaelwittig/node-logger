@@ -47,6 +47,18 @@ In your JavaScript code append the endpoint.
 logger.append(require("cinovo-logger-console")(true, true, true, true));
 `````
 
+If you wish to log to syslog just:
+
+	npm install cinovo-logger-syslog
+
+In your JavaScript code append the endpoint.
+
+`````javascript
+logger.append(require("cinovo-logger-syslog").local(true, true, true, true, "test", "local0"));
+`````
+
+You could also log to [file](https://github.com/cinovo/node-logger-file) or [AWS (S3, SQS, SNS)](https://github.com/cinovo/node-logger-aws).
+
 ### Log something
 
 `````javascript
@@ -268,11 +280,11 @@ There are several options available:
 
 **Examples:**
 
-`````javascript`
+`````javascript
 var cfg = {
 	fullOrigin: true
 };
-````
+`````
 
 ##### filter
 
@@ -289,7 +301,7 @@ var cfg = {
 		"yourorigin/debug": true,	// and allow everything from `origin` yourorigin and `level` debug
 	}
 };
-````
+`````
 
 ### Custom Endpoint
 
@@ -301,7 +313,7 @@ function CustomEndpoint(debug, info, error, critical) {
 	logger.Endpoint.call(this, debug, info, error, critical, "customName");
 }
 util.inherits(CustomEndpoint, logger.Endpoint);
-````
+`````
 
 And you must implement at least this two methods:
 
