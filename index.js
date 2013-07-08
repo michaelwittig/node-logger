@@ -160,12 +160,13 @@ Logger.prototype.exception = function() {
 };
 
 Logger.prototype.append = function(endpoint) {
-	assert.ok(endpoint instanceof lib.Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint._log, "endpoint._log");
 	assert.func(endpoint.stop, "endpoint.stop");
 	assert.func(endpoint._stop, "endpoint._stop");
-	// TODO check if the endpoint was stopped before
+	if (endpoint.stopping === true) {
+		throw new Error("Endpoint stopped");
+	}
 	var self = this;
 	endpoint.on("error", function(err) {
 		endpoint.logErrCount += 1;
@@ -175,7 +176,6 @@ Logger.prototype.append = function(endpoint) {
 };
 
 Logger.prototype.remove = function(endpoint, callback) {
-	assert.ok(endpoint instanceof lib.Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint._log, "endpoint._log");
 	assert.func(endpoint.stop, "endpoint.stop");
