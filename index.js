@@ -99,6 +99,7 @@ function Logger(cfg) {
 		this.cfg.fullOrigin = false;
 	}
 	this.endpoints = [];
+	this.stopping = false;
 	this.stopped = false;
 }
 util.inherits(Logger, events.EventEmitter);
@@ -198,8 +199,8 @@ Logger.prototype.remove = function(endpoint, callback) {
 };
 Logger.prototype.stop = function(callback) {
 	assert.func(callback, "callback");
-	if (this.stopped === false) {
-		this.stopped = true;
+	if (this.stopping === false) {
+		this.stopping = true;
 		var endpointCallbacks = 0, endpointError = undefined, n = this.endpoints.length, self = this;
 		this.endpoints.forEach(function(endpoint) {
 			endpoint.stop(function(err) {
@@ -209,6 +210,7 @@ Logger.prototype.stop = function(callback) {
 				endpoint.removeAllListeners();
 				endpointCallbacks += 1;
 				if (endpointCallbacks === n) {
+					self.stopped = true;
 					self.endpoints = [];
 					self.removeAllListeners();
 					callback(endpointError);
