@@ -1,26 +1,27 @@
 var assert = require("assert-plus"),
 	util = require("util"),
-	logger = require("../index");
+	logger = require("../index"),
+	lib = require("cinovo-logger-lib");
 
 function DummyEndpoint() {
-	logger.Endpoint.call(this, true, true, true, true, "dummy");
+	lib.Endpoint.call(this, true, true, true, true, "dummy");
 }
-util.inherits(DummyEndpoint, logger.Endpoint);
-DummyEndpoint.prototype.log = function(log, errCallback) {
+util.inherits(DummyEndpoint, lib.Endpoint);
+DummyEndpoint.prototype._log = function(log, errCallback) {
 	errCallback();
 };
-DummyEndpoint.prototype.stop = function(errCallback) {
+DummyEndpoint.prototype._stop = function(errCallback) {
 	errCallback();
 };
 
 function ErrorEndpoint() {
-	logger.Endpoint.call(this, true, true, true, true, "error");
+	lib.Endpoint.call(this, true, true, true, true, "error");
 }
-util.inherits(ErrorEndpoint, logger.Endpoint);
-ErrorEndpoint.prototype.log = function(log, errCallback) {
+util.inherits(ErrorEndpoint, lib.Endpoint);
+ErrorEndpoint.prototype._log = function(log, errCallback) {
 	errCallback(new Error("error"));
 };
-ErrorEndpoint.prototype.stop = function(errCallback) {
+ErrorEndpoint.prototype._stop = function(errCallback) {
 	errCallback();
 };
 
@@ -28,29 +29,6 @@ logger.append(new DummyEndpoint());
 logger.fullOrigin();
 
 describe("API", function() {
-	describe("Endpoint", function() {
-		it("should work if all params are set", function(){
-			new logger.Endpoint(true, true, true, true, "test");
-		});
-		it("should not work if one of params are not set", function(){
-			assert.throws(function() {
-				new logger.Endpoint(true, true, true, true);
-			});
-		});
-		it("should not work if one of params is not not bool", function(){
-			assert.throws(function() {
-				new logger.Endpoint(true, true, true, "true", "test");
-			});
-		});
-		it("should emit events", function(done){
-			var endpoint = new logger.Endpoint(true, true, true, true, "test");
-			endpoint.once("test", function(err) {
-				if (err) throw err;
-				done();
-			});
-			endpoint.emit("test");
-		});
-	});
 	describe("logger", function() {
 		it("should emit endpoint_error Event on error event", function(done){
 			var endpoint = new ErrorEndpoint();
@@ -336,7 +314,7 @@ describe("API", function() {
 		it("should be test/api.js in line 302", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 342, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 320, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");

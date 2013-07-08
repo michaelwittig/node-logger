@@ -2,6 +2,7 @@ var events = require("events"),
 	util = require("util"),
 	assert = require("assert-plus"),
 	os = require("os"),
+	lib = require("cinovo-logger-lib"),
 	filter = require("./lib/filter");
 
 function getFullOrigin() {
@@ -86,24 +87,6 @@ function extractError(arguments) {
 	return arguments;
 }
 
-function Endpoint(debug, info, error, critical, name) {
-	assert.bool(debug, "debug");
-	assert.bool(info, "info");
-	assert.bool(error, "error");
-	assert.bool(critical, "critical");
-	assert.string(name, "name");
-	events.EventEmitter.call(this);
-	this.levels = {
-		debug: debug,
-		info: info,
-		error: error,
-		critical: critical
-	};
-	this.name = name;
-	this.logErrCount = 0;
-}
-util.inherits(Endpoint, events.EventEmitter);
-
 function Logger(cfg) {
 	events.EventEmitter.call(this);
 	this.cfg = cfg || {};
@@ -177,9 +160,11 @@ Logger.prototype.exception = function() {
 };
 
 Logger.prototype.append = function(endpoint) {
-	assert.ok(endpoint instanceof Endpoint, "endpoint");
+	assert.ok(endpoint instanceof lib.Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
+	assert.func(endpoint._log, "endpoint._log");
 	assert.func(endpoint.stop, "endpoint.stop");
+	assert.func(endpoint._stop, "endpoint._stop");
 	// TODO check if the endpoint was stopped before
 	var self = this;
 	endpoint.on("error", function(err) {
@@ -190,9 +175,11 @@ Logger.prototype.append = function(endpoint) {
 };
 
 Logger.prototype.remove = function(endpoint, callback) {
-	assert.ok(endpoint instanceof Endpoint, "endpoint");
+	assert.ok(endpoint instanceof lib.Endpoint, "endpoint");
 	assert.func(endpoint.log, "endpoint.log");
+	assert.func(endpoint._log, "endpoint._log");
 	assert.func(endpoint.stop, "endpoint.stop");
+	assert.func(endpoint._stop, "endpoint._stop");
 	assert.func(callback, "callback");
 	var idx = this.endpoints.indexOf(endpoint);
 	if (idx !== -1) {
@@ -278,7 +265,6 @@ exports.fullOrigin = function() {
 	defaultLogger.cfg.fullOrigin = true;
 };
 exports.cfg = defaultLogger.cfg;
-exports.Endpoint = Endpoint;
 exports.createLogger = function(cfg) {
 	return new Logger(cfg);
 };

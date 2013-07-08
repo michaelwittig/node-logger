@@ -164,13 +164,13 @@ Removes all listeners, or those of the specified event.
 
 * `event`: String (optional)
 
-### append(appender)
+### append(endpoint)
 
-* `appender`: must extend logger.Endpoint see **Custom Endpoint**
+* `endpoint`: must extend Endpoint see **Custom Endpoint**
 
-### remove(appender, callback)
+### remove(endpoint, callback)
 
-* `appender`: must extend logger.Endpoint see **Custom Endpoint**
+* `endpoint`: must extend Endpoint see **Custom Endpoint**
 * `callback`: Function(err)
     * `err`: Error
 
@@ -305,24 +305,24 @@ var cfg = {
 
 ### Custom Endpoint
 
-You must extend the cinovo-logger.Endpoint.
+You must extend the cinovo-logger.lib.Endpoint.
 
 `````javascript
-var logger = require("cinovo-logger");
+var lib = require("cinovo-logger-lib");
 function CustomEndpoint(debug, info, error, critical) {
-	logger.Endpoint.call(this, debug, info, error, critical, "customName");
+	lib.Endpoint.call(this, debug, info, error, critical, "customName");
 }
-util.inherits(CustomEndpoint, logger.Endpoint);
+util.inherits(CustomEndpoint, lib.Endpoint);
 `````
 
 And you must implement at least this two methods:
 
 `````javascript
-CustomEndpoint.prototype.log = function(log, callback) {
+CustomEndpoint.prototype._log = function(log, callback) {
 	// write the log object and call the callback if the log is written
 	callback();
 };
-CustomEndpoint.prototype.stop = function(callback) {
+CustomEndpoint.prototype._stop = function(callback) {
 	// stop the endpoint, call the callback if finished and all logs are written
 	try {
     	callback();
