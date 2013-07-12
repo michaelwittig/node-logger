@@ -116,6 +116,15 @@ describe("API", function() {
 			});
 			logger.debug("message", {a: 1}, function() {});
 		});
+		it("should work if message, metadata is only Boolean false and callback are set", function(done) {
+			logger.once("level_debug", function(log) {
+				assert.equal(log.origin, undefined);
+				assert.equal(log.message, "message");
+				assert.deepEqual(log.metadata, false);
+				done();
+			});
+			logger.debug("message", false, function() {});
+		});
 		it("should work if origin, message and metadata are set", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.origin, "origin");
@@ -314,7 +323,7 @@ describe("API", function() {
 		it("should be test/api.js in line 302", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 320, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 329, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
