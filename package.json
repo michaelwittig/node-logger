@@ -25,7 +25,7 @@
 		"url": "https://github.com/cinovo/node-logger.git"
 	},
 	"dependencies": {
-		"cinovo-logger-lib": ">=0.4.3 <0.5.x",
+		"cinovo-logger-lib": ">=0.4.3 <0.5.0",
 		"assert-plus": "0.1.4"
 	},
 	"devDependencies": {
