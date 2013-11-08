@@ -35,6 +35,7 @@ There are some endpoints available:
 * [cinovo-logger-syslog](https://github.com/cinovo/node-logger-syslog)
 * [cinovo-logger-aws](https://github.com/cinovo/node-logger-aws)
 * [cinovo-logger-notificationcenter](https://github.com/cinovo/node-logger-notificationcenter)
+* [cinovo-logger-loggly](https://github.com/cinovo/node-logger-loggly)
 
 You could also write your own endpoint (see Custom Endpoint).
 

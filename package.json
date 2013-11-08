@@ -1,6 +1,6 @@
 {
 	"name": "cinovo-logger",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"description": "Async logger for Node.js with multiple endpoints.",
 	"keywords": [
 		"logger",
