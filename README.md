@@ -120,7 +120,7 @@ The log object contains the following fields:
 
 `````
 {
-	level: String["debug", "warning", "error", "critical"]
+	level: String["debug", "info", "error", "critical"]
 	date: Date
 	pid: Number
 	hostname: String
