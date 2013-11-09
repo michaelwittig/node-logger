@@ -62,7 +62,7 @@ In your JavaScript code append the endpoint.
 logger.append(require("cinovo-logger-syslog").local(true, true, true, true, "test", "local0"));
 `````
 
-You could also log to [file](https://github.com/cinovo/node-logger-file) or [AWS (S3, SQS, SNS)](https://github.com/cinovo/node-logger-aws).
+You could also log to [file](https://github.com/cinovo/node-logger-file), [AWS (S3, SQS, SNS)](https://github.com/cinovo/node-logger-aws), [Mac OS X Notification Center](https://github.com/cinovo/node-logger-notificationcenter) or [Loggly](https://github.com/cinovo/node-logger-loggly)
 
 ### Log something
 
