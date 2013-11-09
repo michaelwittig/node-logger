@@ -13,7 +13,6 @@
 [![Build Status](https://secure.travis-ci.org/cinovo/node-logger.png)](http://travis-ci.org/cinovo/node-logger)
 [![NPM version](https://badge.fury.io/js/cinovo-logger.png)](http://badge.fury.io/js/cinovo-logger)
 
-
 # cinovo-logger
 
 cinovo-logger is an async logger for Node.js with multiple endpoints.
