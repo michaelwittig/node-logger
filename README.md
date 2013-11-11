@@ -78,6 +78,12 @@ logger.critical("myscript", "all values are not ok", {a: 10, b: 20}, function(er
 
 Now you can log to multiple endpoints.
 
+## Integrate
+
+You are likely to use some other npms so we tried to integrate cinovo-logger with some popular npms by providing wrapprs:
+
+* [cinovo-logger-socket.io](https://github.com/cinovo/node-logger-socket.io)
+
 ## API
 
 ### debug, info, error, critical([origin], message, [metadata], [callback])
