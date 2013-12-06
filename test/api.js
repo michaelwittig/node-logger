@@ -3,25 +3,40 @@ var assert = require("assert-plus"),
 	logger = require("../index"),
 	lib = require("cinovo-logger-lib");
 
+var EMPTY_CB = function() {
+	"use strict";
+	return;
+};
+
 function DummyEndpoint() {
+	"use strict";
 	lib.Endpoint.call(this, true, true, true, true, "dummy");
 }
 util.inherits(DummyEndpoint, lib.Endpoint);
+/*jslint unparam: true*/
 DummyEndpoint.prototype._log = function(log, errCallback) {
+	"use strict";
 	errCallback();
 };
+/*jslint unparam: false*/
 DummyEndpoint.prototype._stop = function(errCallback) {
+	"use strict";
 	errCallback();
 };
 
 function ErrorEndpoint() {
+	"use strict";
 	lib.Endpoint.call(this, true, true, true, true, "error");
 }
 util.inherits(ErrorEndpoint, lib.Endpoint);
+/*jslint unparam: true*/
 ErrorEndpoint.prototype._log = function(log, errCallback) {
+	"use strict";
 	errCallback(new Error("error"));
 };
+/*jslint unparam: false*/
 ErrorEndpoint.prototype._stop = function(errCallback) {
+	"use strict";
 	errCallback();
 };
 
@@ -29,6 +44,7 @@ logger.append(new DummyEndpoint());
 logger.fullOrigin();
 
 describe("API", function() {
+	"use strict";
 	describe("logger", function() {
 		it("should emit endpoint_error Event on error event", function(done){
 			var endpoint = new ErrorEndpoint();
@@ -78,7 +94,7 @@ describe("API", function() {
 				assert.equal(log.metadata, undefined);
 				done();
 			});
-			logger.debug("message", function() {});
+			logger.debug("message", EMPTY_CB);
 		});
 		it("should work if origin and message are set", function(done) {
 			logger.once("level_debug", function(log) {
@@ -96,7 +112,7 @@ describe("API", function() {
 				assert.equal(log.metadata, undefined);
 				done();
 			});
-			logger.debug("origin", "message", function() {});
+			logger.debug("origin", "message", EMPTY_CB);
 		});
 		it("should work if message and metadata are set", function(done) {
 			logger.once("level_debug", function(log) {
@@ -114,7 +130,7 @@ describe("API", function() {
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
 			});
-			logger.debug("message", {a: 1}, function() {});
+			logger.debug("message", {a: 1}, EMPTY_CB);
 		});
 		it("should work if message, metadata is only Boolean false and callback are set", function(done) {
 			logger.once("level_debug", function(log) {
@@ -123,7 +139,7 @@ describe("API", function() {
 				assert.deepEqual(log.metadata, false);
 				done();
 			});
-			logger.debug("message", false, function() {});
+			logger.debug("message", false, EMPTY_CB);
 		});
 		it("should work if origin, message and metadata are set", function(done) {
 			logger.once("level_debug", function(log) {
@@ -141,11 +157,13 @@ describe("API", function() {
 				assert.deepEqual(log.metadata, {a: 1});
 				done();
 			});
-			logger.debug("origin", "message", {a: 1}, function() {});
+			logger.debug("origin", "message", {a: 1}, EMPTY_CB);
 		});
 		it("should work if all params are set", function(done) {
 			logger.debug("origin", "message", {a: 1}, function(err) {
-				if (err) throw err;
+				if (err) {
+					throw err;
+				}
 				done();
 			});
 		});
@@ -185,9 +203,11 @@ describe("API", function() {
 		});
 		it("should work if all params are set", function(done) {
 			logger.info("origin", "message", {a: 1}, function(err) {
-				if (err) throw err;
+				if (err) {
+					throw err;
+				}
 				done();
-			})
+			});
 		});
 	});
 	describe("error", function() {
@@ -225,9 +245,11 @@ describe("API", function() {
 		});
 		it("should work if all params are set", function(done) {
 			logger.error("origin", "message", {a: 1}, function(err) {
-				if (err) throw err;
+				if (err) {
+					throw err;
+				}
 				done();
-			})
+			});
 		});
 	});
 	describe("exception", function() {
@@ -254,10 +276,9 @@ describe("API", function() {
 			logger.exception("origin", "message", new Error("test"), function(err) {
 				if (err) {
 					throw err;
-				} else {
-					done();
 				}
-			})
+				done();
+			});
 		});
 	});
 	describe("critical", function() {
@@ -295,9 +316,11 @@ describe("API", function() {
 		});
 		it("should work if all params are set", function(done) {
 			logger.critical("origin", "message", {a: 1}, function(err) {
-				if (err) throw err;
+				if (err) {
+					throw err;
+				}
 				done();
-			})
+			});
 		});
 	});
 	describe("append", function() {
@@ -313,17 +336,16 @@ describe("API", function() {
 			logger.remove(e, function(err) {
 				if (err) {
 					throw err;
-				} else {
-					done();
 				}
+				done();
 			});
 		});
 	});
 	describe("fullOrigin", function() {
-		it("should be test/api.js in line 302", function(done) {
+		it("should be test/api.js in line 351", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 329, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 351, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");
@@ -336,16 +358,15 @@ describe("API", function() {
 			logger.stop(function(err) {
 				if (err) {
 					throw err;
-				} else {
-					done();
 				}
+				done();
 			});
 		});
 	});
 	describe("createLogger", function() {
 		it("should work", function(done) {
-			var e = new DummyEndpoint();
-			var l = logger.createLogger();
+			var e = new DummyEndpoint(),
+				l = logger.createLogger();
 			l.append(e);
 			l.once("level_debug", function(log) {
 				assert.equal(log.origin, undefined);
@@ -355,16 +376,15 @@ describe("API", function() {
 				l.stop(function(err) {
 					if (err) {
 						throw err;
-					} else {
-						done();
 					}
+					done();
 				});
-			})
+			});
 			l.debug("test");
 		});
 		it("should work with fullOrigin cgf", function(done) {
-			var e = new DummyEndpoint();
-			var l = logger.createLogger({fullOrigin: true});
+			var e = new DummyEndpoint(),
+				l = logger.createLogger({fullOrigin: true});
 			l.append(e);
 			l.once("level_debug", function(log) {
 				assert.equal(log.origin, undefined);
@@ -374,11 +394,10 @@ describe("API", function() {
 				l.stop(function(err) {
 					if (err) {
 						throw err;
-					} else {
-						done();
 					}
+					done();
 				});
-			})
+			});
 			l.debug("test");
 		});
 	});

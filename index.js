@@ -6,21 +6,22 @@ var events = require("events"),
 	filter = require("./lib/filter");
 
 function getFullOrigin() {
-	var depth = 5;
-	var e = new Error();
-	var stack = e.stack.split("\n");
-	var call;
+	"use strict";
+	var depth = 5,
+		e = new Error(),
+		stack = e.stack.split("\n"),
+		call, i, j, fn, file, line;
 	if (stack.length < depth) {
 		call = stack[stack.length - 1];
 	} else {
 		call = stack[depth];
 	}
 	call = call.replace("    at ", "");
-	var i = call.indexOf("(");
-	var j = call.indexOf(":");
-	var fn = call.substring(0, i - 1);
-	var file = call.substring(i + 1, j).replace(__dirname + "/", "");
-	var line = call.substring(j + 1);
+	i = call.indexOf("(");
+	j = call.indexOf(":");
+	fn = call.substring(0, i - 1);
+	file = call.substring(i + 1, j).replace(__dirname + "/", "");
+	line = call.substring(j + 1);
 	line = line.substring(0, line.indexOf(":"));
 	return {
 		file: file,
@@ -30,6 +31,7 @@ function getFullOrigin() {
 }
 
 function getData(level, fullOrigin, args) {
+	"use strict";
 	var data = {
 		level: level,
 		date: new Date(),
@@ -69,13 +71,14 @@ function getData(level, fullOrigin, args) {
 	return data;
 }
 
-function extractError(arguments) {
-	var i;
-	for (i = 0; i < arguments.length; i += 1) {
-		var arg = arguments[i];
+function extractError(args) {
+	"use strict";
+	var i, arg, stack;
+	for (i = 0; i < args.length; i += 1) {
+		arg = args[i];
 		if (arg instanceof Error) {
-			var stack = (typeof arg.stack === "string") ? arg.stack.replace(/    at /g, "").split("\n") : [];
-			arguments[i] = {
+			stack = (typeof arg.stack === "string") ? arg.stack.replace(/([ ]{4,4})at /g, "").split("\n") : [];
+			args[i] = {
 				message: arg.message,
 				type: (stack.length > 0) ? stack[0].split(":")[0] : "",
 				fileName: arg.fileName,
@@ -84,10 +87,11 @@ function extractError(arguments) {
 			};
 		}
 	}
-	return arguments;
+	return args;
 }
 
 function Logger(cfg) {
+	"use strict";
 	events.EventEmitter.call(this);
 	this.cfg = cfg || {};
 	if (this.cfg.filter === undefined) {
@@ -104,26 +108,25 @@ function Logger(cfg) {
 }
 util.inherits(Logger, events.EventEmitter);
 Logger.prototype.log = function(level, args) {
+	"use strict";
+	var callback, data, endpointCallbacks = 0, endpointError, self = this;
 	if (this.stopped === true) {
-		new Error("Already stopped");
+		throw new Error("Already stopped");
 	}
 	if (this.endpoints.length === 0) {
 		throw new Error("No endpoints appended");
 	}
-	var callback = undefined;
 	if (typeof args[args.length - 1] === "function") {
 		callback =  args[args.length - 1];
 		args = Array.prototype.slice.apply(args, [0, args.length - 1]);
 	}
-	var data = getData(level, this.cfg.fullOrigin, args);
+	data = getData(level, this.cfg.fullOrigin, args);
 	if (filter.filter(data, this.cfg.filter) === false) {
 		if (callback) {
 			callback();
 		}
 		return;
 	}
-	var endpointCallbacks = 0, endpointError = undefined;
-	var self = this;
 	this.endpoints.forEach(function(endpoint) {
 		if (endpoint.levels[data.level] === true) {
 			endpoint.log(data, function(err) {
@@ -148,19 +151,24 @@ Logger.prototype.log = function(level, args) {
 	this.emit("level_" + data.level, data);
 };
 Logger.prototype.debug = function() {
+	"use strict";
 	this.log("debug", arguments);
 };
 Logger.prototype.info = function() {
+	"use strict";
 	this.log("info", arguments);
 };
 Logger.prototype.error = function() {
+	"use strict";
 	this.log("error", arguments);
 };
 Logger.prototype.exception = function() {
+	"use strict";
 	this.log("error", extractError(arguments));
 };
 
 Logger.prototype.append = function(endpoint) {
+	"use strict";
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint._log, "endpoint._log");
 	assert.func(endpoint.stop, "endpoint.stop");
@@ -177,6 +185,7 @@ Logger.prototype.append = function(endpoint) {
 };
 
 Logger.prototype.remove = function(endpoint, callback) {
+	"use strict";
 	assert.func(endpoint.log, "endpoint.log");
 	assert.func(endpoint._log, "endpoint._log");
 	assert.func(endpoint.stop, "endpoint.stop");
@@ -198,10 +207,11 @@ Logger.prototype.remove = function(endpoint, callback) {
 	}
 };
 Logger.prototype.stop = function(callback) {
+	"use strict";
+	var endpointCallbacks = 0, endpointError, n = this.endpoints.length, self = this;
 	assert.func(callback, "callback");
 	if (this.stopping === false) {
 		this.stopping = true;
-		var endpointCallbacks = 0, endpointError = undefined, n = this.endpoints.length, self = this;
 		this.endpoints.forEach(function(endpoint) {
 			endpoint.stop(function(err) {
 				if (err) {
@@ -223,50 +233,64 @@ Logger.prototype.stop = function(callback) {
 };
 
 var defaultLogger = new Logger({filter: {"*": true}});
-
-exports.debug = function(origin, message, metadata, callback) {
+exports.debug = function() {
+	"use strict";
 	defaultLogger.log("debug", arguments);
 };
-exports.info = function(origin, message, metadata, callback) {
+exports.info = function() {
+	"use strict";
 	defaultLogger.log("info", arguments);
 };
-exports.error = function(origin, message, metadata, callback) {
+exports.error = function() {
+	"use strict";
 	defaultLogger.log("error", arguments);
 };
-exports.critical = function(origin, message, metadata, callback) {
+exports.critical = function() {
+	"use strict";
 	defaultLogger.log("critical", arguments);
 };
-exports.exception = function(origin, message, err, callback) {
+exports.exception = function() {
+	"use strict";
 	defaultLogger.log("error", extractError(arguments));
 };
 exports.on = function(event, listener) {
+	"use strict";
 	defaultLogger.on(event, listener);
 };
 exports.addListener = function(event, listener) {
+	"use strict";
 	defaultLogger.addListener(event, listener);
 };
 exports.once = function(event, listener) {
+	"use strict";
 	defaultLogger.once(event, listener);
 };
 exports.removeListener = function(event, listener) {
+	"use strict";
 	defaultLogger.removeListener(event, listener);
 };
 exports.removeAllListeners = function(event) {
+	"use strict";
 	defaultLogger.removeAllListeners(event);
 };
 exports.append = function(endpoint) {
+	"use strict";
 	defaultLogger.append(endpoint);
 };
 exports.remove = function(endpoint, callback) {
+	"use strict";
 	defaultLogger.remove(endpoint, callback);
 };
 exports.stop = function(callback) {
+	"use strict";
 	defaultLogger.stop(callback);
 };
 exports.fullOrigin = function() {
+	"use strict";
 	defaultLogger.cfg.fullOrigin = true;
 };
 exports.cfg = defaultLogger.cfg;
 exports.createLogger = function(cfg) {
+	"use strict";
 	return new Logger(cfg);
 };

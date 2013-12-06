@@ -2,21 +2,21 @@ default: test
 
 jslint:
 	@echo "jslint"
-	@jslint *.js
+	@find . -name "*.js" -not -path "./node_modules/*" -print0 | xargs -0 ./node_modules/jslint/bin/jslint.js --white --nomen --node --predef describe --predef it
 
 circular:
 	@echo "circular"
-	@madge --circular --format amd .
+	@./node_modules/madge/bin/madge --circular --format amd .
 
 mocha:
 	@echo "mocha"
-	@mocha test/*.js
+	@./node_modules/mocha/bin/mocha test/*.js
 	@echo
 
-test: mocha circular
+test: jslint mocha circular
 	@echo "test"
 	@echo
 
 outdated:
 	@echo "outdated modules?"
-	@npmedge
+	@./node_modules/npmedge/bin/npmedge

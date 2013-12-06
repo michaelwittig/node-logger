@@ -3,6 +3,7 @@ var assert = require("assert-plus"),
 	filter = require("../lib/filter");
 
 describe("filter", function() {
+	"use strict";
 	describe("filter()", function() {
 		it("should be true", function(){
 			var log = {origin: "test", level: "debug"};
