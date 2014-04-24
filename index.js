@@ -208,25 +208,27 @@ Logger.prototype.remove = function(endpoint, callback) {
 };
 Logger.prototype.stop = function(callback) {
 	"use strict";
-	var endpointCallbacks = 0, endpointError, n = this.endpoints.length, self = this;
+	var endpointCallbacks = 0, endpointError, n = this.endpoints.length, self = this, endpoint;
+	function stopcb(err) {
+		if (err) {
+			endpointError = err;
+		}
+		endpoint.removeAllListeners();
+		endpointCallbacks += 1;
+		if (endpointCallbacks === n) {
+			self.stopped = true;
+			self.endpoints = [];
+			self.removeAllListeners();
+			callback(endpointError);
+		}
+	}
 	assert.func(callback, "callback");
 	if (this.stopping === false) {
 		this.stopping = true;
-		this.endpoints.forEach(function(endpoint) {
-			endpoint.stop(function(err) {
-				if (err) {
-					endpointError = err;
-				}
-				endpoint.removeAllListeners();
-				endpointCallbacks += 1;
-				if (endpointCallbacks === n) {
-					self.stopped = true;
-					self.endpoints = [];
-					self.removeAllListeners();
-					callback(endpointError);
-				}
-			});
-		});
+		while(this.endpoints.length > 0) {
+			endpoint = this.endpoints.pop();
+			endpoint.stop(stopcb);
+		}
 	} else {
 		callback(new Error("Already stopped"));
 	}

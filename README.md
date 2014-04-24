@@ -317,29 +317,4 @@ var cfg = {
 
 ### Custom Endpoint
 
-You must extend the cinovo-logger.lib.Endpoint.
-
-`````javascript
-var lib = require("cinovo-logger-lib");
-function CustomEndpoint(debug, info, error, critical) {
-	lib.Endpoint.call(this, debug, info, error, critical, "customName");
-}
-util.inherits(CustomEndpoint, lib.Endpoint);
-`````
-
-And you must implement at least this two methods:
-
-`````javascript
-CustomEndpoint.prototype._log = function(log, callback) {
-	// write the log object and call the callback if the log is written
-	callback();
-};
-CustomEndpoint.prototype._stop = function(callback) {
-	// stop the endpoint, call the callback if finished and all logs are written
-	try {
-    	callback();
-    } finally {
-    	this.emit("stop");
-    }
-};
-`````
+Visit [cinovo-logger-lib](https://github.com/cinovo/node-logger-lib).

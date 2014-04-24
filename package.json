@@ -1,6 +1,6 @@
 {
 	"name": "cinovo-logger",
-	"version": "0.4.10",
+	"version": "0.4.11",
 	"description": "Async logger for Node.js with multiple endpoints.",
 	"keywords": [
 		"logger",
@@ -25,14 +25,14 @@
 		"url": "https://github.com/cinovo/node-logger.git"
 	},
 	"dependencies": {
-		"cinovo-logger-lib": ">=0.4.3 <0.5.0",
+		"cinovo-logger-lib": "0.4.5",
 		"assert-plus": "0.1.5"
 	},
 	"devDependencies": {
-		"mocha": "1.15.1",
-		"jslint": "0.2.5",
-		"madge": "0.1.7",
-		"npmedge": "0.1.4"
+		"mocha": "1.18.2",
+		"jslint": "0.3.3",
+		"madge": "0.2.0",
+		"npmedge": "0.1.5"
 	},
 	"main": "index",
 	"engines": {
