@@ -280,6 +280,38 @@ describe("API", function() {
 				done();
 			});
 		});
+		it("errors must be found in depth", function(done) {
+			logger.once("level_error", function(log) {
+				assert.equal(log.message, "message");
+				assert.equal(log.metadata.a, 1);
+				assert.equal(log.metadata.err.message, "test");
+				assert.equal(log.metadata.err.type, "Error");
+				done();
+			});
+			logger.exception("message", {a: 1, err: new Error("test")});
+		});
+		it("errors must be found in arrays", function(done) {
+			logger.once("level_error", function(log) {
+				assert.equal(log.message, "message");
+				assert.equal(log.metadata[0], 1);
+				assert.equal(log.metadata[1].message, "test");
+				assert.equal(log.metadata[1].type, "Error");
+				done();
+			});
+			logger.exception("message", [1, new Error("test")]);
+		});
+		it("props of errors must be contained", function(done) {
+			logger.once("level_error", function(log) {
+				assert.equal(log.message, "message");
+				assert.equal(log.metadata.message, "test");
+				assert.equal(log.metadata.type, "Error");
+				assert.equal(log.metadata.testProp, true);
+				done();
+			});
+			var err = new Error("test");
+			err.testProp = true;
+			logger.exception("message", err);
+		});
 	});
 	describe("critical", function() {
 		it("should work if message is set", function(done) {
@@ -342,10 +374,10 @@ describe("API", function() {
 		});
 	});
 	describe("fullOrigin", function() {
-		it("should be test/api.js in line 351", function(done) {
+		it("should be test/api.js in line 383", function(done) {
 			logger.once("level_debug", function(log) {
 				assert.equal(log.fullOrigin.file, "test/api.js", "log.fullOrigin.file");
-				assert.equal(log.fullOrigin.line, 351, "log.fullOrigin.line");
+				assert.equal(log.fullOrigin.line, 383, "log.fullOrigin.line");
 				done();
 			});
 			logger.debug("message");

@@ -2,6 +2,7 @@ var events = require("events"),
 	util = require("util"),
 	assert = require("assert-plus"),
 	os = require("os"),
+	extend = require("extend"),
 	lib = require("cinovo-logger-lib"),
 	filter = require("./lib/filter");
 
@@ -71,21 +72,41 @@ function getData(level, fullOrigin, args) {
 	return data;
 }
 
-function extractError(args) {
+function findAndConvertError(o) {
 	"use strict";
-	var i, arg, stack;
+    var i, k, stack;
+	if (Array.isArray(o)) {
+        for (i = 0; i < o.length; i += 1) {
+            o[i] = findAndConvertError(o[i]);
+        }
+        return o;
+	}
+    if (o instanceof Error) {
+		stack = (typeof o.stack === "string") ? o.stack.replace(/([ ]{4,4})at /g, "").split("\n") : [];
+		return extend({}, o, {
+			message: o.message,
+			type: (stack.length > 0) ? stack[0].split(":")[0] : "",
+			fileName: o.fileName,
+			lineNumber: o.lineNumber,
+			stack: stack.slice(1)
+		});
+	}
+    if(typeof o === "object") {
+		for (k in o) {
+            if (o.hasOwnProperty(k)) {
+                o[k] = findAndConvertError(o[k]);
+            }
+        }
+        return o;
+	}
+	return o;
+}
+
+function findAndConvertErrorFromArguments(args) {
+    "use strict";
+	var i;
 	for (i = 0; i < args.length; i += 1) {
-		arg = args[i];
-		if (arg instanceof Error) {
-			stack = (typeof arg.stack === "string") ? arg.stack.replace(/([ ]{4,4})at /g, "").split("\n") : [];
-			args[i] = {
-				message: arg.message,
-				type: (stack.length > 0) ? stack[0].split(":")[0] : "",
-				fileName: arg.fileName,
-				lineNumber: arg.lineNumber,
-				stack: stack.slice(1)
-			};
-		}
+		args[i] = findAndConvertError(args[i]);
 	}
 	return args;
 }
@@ -164,7 +185,7 @@ Logger.prototype.error = function() {
 };
 Logger.prototype.exception = function() {
 	"use strict";
-	this.log("error", extractError(arguments));
+	this.log("error", findAndConvertErrorFromArguments(arguments));
 };
 
 Logger.prototype.append = function(endpoint) {
@@ -253,7 +274,7 @@ exports.critical = function() {
 };
 exports.exception = function() {
 	"use strict";
-	defaultLogger.log("error", extractError(arguments));
+	defaultLogger.log("error", findAndConvertErrorFromArguments(arguments));
 };
 exports.on = function(event, listener) {
 	"use strict";

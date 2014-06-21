@@ -1,6 +1,6 @@
 {
 	"name": "cinovo-logger",
-	"version": "0.4.11",
+	"version": "0.4.12",
 	"description": "Async logger for Node.js with multiple endpoints.",
 	"keywords": [
 		"logger",
@@ -26,7 +26,8 @@
 	},
 	"dependencies": {
 		"cinovo-logger-lib": "0.4.5",
-		"assert-plus": "0.1.5"
+		"assert-plus": "0.1.5",
+		"extend": "1.3.0"
 	},
 	"devDependencies": {
 		"mocha": "1.18.2",
