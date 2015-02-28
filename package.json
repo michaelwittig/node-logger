@@ -16,13 +16,10 @@
 			"email": "me@andreaswittig.info"
 		}
 	],
-	"licenses": [{
-		"type": "Apache License, Version 2.0",
-		"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-	}],
+	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cinovo/node-logger.git"
+		"url": "https://github.com/michaelwittig/node-logger.git"
 	},
 	"dependencies": {
 		"cinovo-logger-lib": "0.4.5",
@@ -44,6 +41,6 @@
 	},
 	"readmeFilename": "README.md",
 	"bugs": {
-		"url": "https://github.com/cinovo/node-logger/issues"
+		"url": "https://github.com/michaelwittig/node-logger/issues"
 	}
 }
