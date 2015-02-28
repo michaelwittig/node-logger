@@ -10,9 +10,9 @@
                                                                       \_/__/  \_/__/
 `````
 
-[![Build Status](https://secure.travis-ci.org/cinovo/node-logger.png)](http://travis-ci.org/cinovo/node-logger)
+[![Build Status](https://secure.travis-ci.org/michaelwittig/node-logger.png)](http://travis-ci.org/michaelwittig/node-logger)
 [![NPM version](https://badge.fury.io/js/cinovo-logger.png)](http://badge.fury.io/js/cinovo-logger)
-[![NPM dependencies](https://david-dm.org/cinovo/node-logger.png)](https://david-dm.org/cinovo/node-logger)
+[![NPM dependencies](https://david-dm.org/michaelwittig/node-logger.png)](https://david-dm.org/michaelwittig/node-logger)
 
 # cinovo-logger
 
@@ -34,12 +34,12 @@ var logger = require("cinovo-logger");
 
 There are some endpoints available:
 
-* [cinovo-logger-console](https://github.com/cinovo/node-logger-console)
-* [cinovo-logger-file](https://github.com/cinovo/node-logger-file)
-* [cinovo-logger-syslog](https://github.com/cinovo/node-logger-syslog)
-* [cinovo-logger-aws](https://github.com/cinovo/node-logger-aws)
-* [cinovo-logger-notificationcenter](https://github.com/cinovo/node-logger-notificationcenter)
-* [cinovo-logger-loggly](https://github.com/cinovo/node-logger-loggly)
+* [cinovo-logger-console](https://github.com/michaelwittig/node-logger-console)
+* [cinovo-logger-file](https://github.com/michaelwittig/node-logger-file)
+* [cinovo-logger-syslog](https://github.com/michaelwittig/node-logger-syslog)
+* [cinovo-logger-aws](https://github.com/michaelwittig/node-logger-aws)
+* [cinovo-logger-notificationcenter](https://github.com/michaelwittig/node-logger-notificationcenter)
+* [cinovo-logger-loggly](https://github.com/michaelwittig/node-logger-loggly)
 
 You could also write your own endpoint (see Custom Endpoint).
 
@@ -63,7 +63,7 @@ In your JavaScript code append the endpoint.
 logger.append(require("cinovo-logger-syslog").local(true, true, true, true, "test", "local0"));
 `````
 
-You could also log to [file](https://github.com/cinovo/node-logger-file), [AWS (S3, SQS, SNS)](https://github.com/cinovo/node-logger-aws), [Mac OS X Notification Center](https://github.com/cinovo/node-logger-notificationcenter) or [Loggly](https://github.com/cinovo/node-logger-loggly)
+You could also log to [file](https://github.com/michaelwittig/node-logger-file), [AWS (S3, SQS, SNS)](https://github.com/michaelwittig/node-logger-aws), [Mac OS X Notification Center](https://github.com/michaelwittig/node-logger-notificationcenter) or [Loggly](https://github.com/michaelwittig/node-logger-loggly)
 
 ### Log something
 
@@ -83,7 +83,7 @@ Now you can log to multiple endpoints.
 
 You are likely to use some other npms so we tried to integrate cinovo-logger with some popular npms by providing wrapprs:
 
-* [cinovo-logger-socket.io](https://github.com/cinovo/node-logger-socket.io)
+* [cinovo-logger-socket.io](https://github.com/michaelwittig/node-logger-socket.io)
 
 ## API
 
@@ -317,4 +317,4 @@ var cfg = {
 
 ### Custom Endpoint
 
-Visit [cinovo-logger-lib](https://github.com/cinovo/node-logger-lib).
+Visit [cinovo-logger-lib](https://github.com/michaelwittig/node-logger-lib).
